@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Друже, де мої гроші? | Калькулятор втраченої вигоди від боргу</title>
+    
+    <!-- SEO Meta Tags -->
+    <meta name="description" content="Стильний та інтерактивний односторінковий калькулятор альтернативної вартості боргу. Дізнайтеся, скільки ви могли б заробити, якби вклали ці гроші в ОВДП, акції чи золото.">
+    <meta name="keywords" content="калькулятор боргу, втрачена вигода, ОВДП, інвестиції Україна, золото курс, депозити гривня, S&P 500 Україна">
+    <meta name="author" content="Antigravity Team">
+    
+    <!-- Open Graph (Facebook / LinkedIn) -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Друже, де мої гроші? | Калькулятор втраченої вигоди">
+    <meta property="og:description" content="Мій борг за цей час міг перетворитися на солідний інвестиційний портфель. Порахуй свою втрачену вигоду!">
+    <meta property="og:image" content="https://images.unsplash.com/photo-1579621970563-ebec7560ff3e?q=80&w=1200&h=630&fit=crop">
+    
+    <!-- Twitter Cards -->
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Друже, де мої гроші? | Калькулятор втраченої вигоди">
+    <meta name="twitter:description" content="Порахуй, який прибуток ти отримав би, якби замість безвідсоткової позики вклав гроші в ОВДП, акції чи золото.">
+    
+    <!-- Google Fonts: Outfit for sleek typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom CSS Stylesheet -->
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="background-glow"></div>
+    
+    <div class="container animate-fade-in">
+        <!-- Header -->
+        <header class="app-header">
+            <div class="logo">
+                <span class="logo-emoji">💸</span>
+                <span class="logo-text">Alternative Cost</span>
+            </div>
+            <h1 class="main-title">Друже, де мої <span class="gradient-text">гроші?</span></h1>
+            <p class="subtitle">Позичка другу під 0% річних — благородний вчинок. Але що, якби ці кошти працювали на ринку, поки борг не повертають?</p>
+        </header>
+
+        <!-- Main Calculator Layout -->
+        <main class="calculator-grid">
+            
+            <!-- Sidebar Controls -->
+            <section class="controls-panel glass">
+                <h2 class="panel-title">Налаштування боргу</h2>
+                
+                <!-- Debt Amount Input -->
+                <div class="input-group">
+                    <label for="debt-amount">Сума боргу, грн</label>
+                    <div class="number-input-wrapper">
+                        <input type="number" id="debt-amount" min="1" max="100000000" value="50000" placeholder="Введіть суму">
+                        <span class="currency-badge">UAH</span>
+                    </div>
+                </div>
+                
+                <!-- Quick Preset Buttons -->
+                <div class="presets-container">
+                    <button class="preset-btn" data-value="10000">10k</button>
+                    <button class="preset-btn" data-value="20000">20k</button>
+                    <button class="preset-btn active" data-value="50000">50k</button>
+                    <button class="preset-btn" data-value="100000">100k</button>
+                    <button class="preset-btn" data-value="250000">250k</button>
+                    <button class="preset-btn" data-value="500000">500k</button>
+                </div>
+                
+                <!-- Date Picker -->
+                <div class="input-group">
+                    <label for="issue-date">Коли борг було видано?</label>
+                    <div class="date-input-wrapper">
+                        <input type="date" id="issue-date" max="2026-05-21">
+                    </div>
+                </div>
+                
+                <!-- Time Elapsed Status -->
+                <div class="status-box glass-inset" id="status-box">
+                    <div class="status-header">
+                        <span class="status-indicator" id="status-indicator"></span>
+                        <span class="status-title" id="status-title">Тривалість прострочення</span>
+                    </div>
+                    <p class="status-text" id="elapsed-time-text">Завантаження...</p>
+                </div>
+            </section>
+
+            <!-- Regret / Summary Panel -->
+            <section class="summary-panel glass">
+                <div class="summary-meta">
+                    <span class="regret-badge">Фактор жалю 💔</span>
+                </div>
+                <div class="regret-title">Втрачена вигода становить</div>
+                <div class="regret-value-wrapper">
+                    <span class="regret-currency">₴</span>
+                    <span class="regret-amount" id="max-regret-amount">0</span>
+                </div>
+                <p class="regret-description" id="regret-comment">Ці гроші просто розчинилися в повітрі. Точніше, залишилися у кишені твого друга...</p>
+                
+                <!-- Regret Scale Visualized -->
+                <div class="regret-scale-container">
+                    <div class="scale-label-row">
+                        <span>Смирення</span>
+                        <span>Тривога</span>
+                        <span>Лють</span>
+                    </div>
+                    <div class="scale-track">
+                        <div class="scale-fill" id="regret-scale-fill"></div>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <button class="btn btn-primary" id="share-hint-btn">
+                        <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="18" cy="5" r="3"></circle>
+                            <circle cx="6" cy="12" r="3"></circle>
+                            <circle cx="18" cy="19" r="3"></circle>
+                            <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
+                            <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
+                        </svg>
+                        Надіслати натяк другу
+                    </button>
+                </div>
+            </section>
+            
+        </main>
+
+        <!-- Dynamic Investment Cards Section -->
+        <section class="results-section">
+            <h2 class="section-heading">Альтернативні сценарії інвестування</h2>
+            <p class="section-subheading">Ось скільки б принесли ці гроші, якби ти вклав їх під реальні річні ставки APY за цей період:</p>
+
+            <div class="cards-grid" id="cards-grid">
+                
+                <!-- 1. UAH Bank Deposit (Baseline) -->
+                <article class="invest-card glass" data-index="0">
+                    <div class="card-glow"></div>
+                    <header class="card-header">
+                        <div class="card-icon-box card-icon-deposit">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="card-svg">
+                                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                                <path d="M12 2v4M8 5h8"></path>
+                                <circle cx="12" cy="16" r="2"></circle>
+                            </svg>
+                        </div>
+                        <div class="card-title-group">
+                            <h3 class="card-title">Депозит у гривні</h3>
+                            <span class="card-badge badge-baseline">Базовий сценарій</span>
+                        </div>
+                    </header>
+                    <div class="card-body">
+                        <div class="rate-badge">10.78% APY <span class="rate-note">нетто</span></div>
+                        <div class="math-row">
+                            <span class="label">Фінальна сума</span>
+                            <span class="value font-numeric" id="card-sum-0">0 ₴</span>
+                        </div>
+                        <div class="math-row divider">
+                            <span class="label">Чистий прибуток</span>
+                            <span class="value profit font-numeric" id="card-profit-0">+0 ₴</span>
+                        </div>
+                        <p class="card-comment" id="card-comment-0">Найпростіший спосіб. Навіть банк переганяє твого друга за надійністю.</p>
+                        <a href="https://bank.gov.ua/ua/open-data" target="_blank" rel="noopener noreferrer" class="card-api-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            Дані UIRD / API НБУ ↗
+                        </a>
+                    </div>
+                </article>
+
+                <!-- 2. Government Bonds (OVDP) -->
+                <article class="invest-card glass" data-index="1">
+                    <div class="card-glow"></div>
+                    <header class="card-header">
+                        <div class="card-icon-box card-icon-bond">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="card-svg">
+                                <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"></path>
+                            </svg>
+                        </div>
+                        <div class="card-title-group">
+                            <h3 class="card-title">ОВДП (Гривня)</h3>
+                            <span class="card-badge badge-safe">Максимум безпеки</span>
+                        </div>
+                    </header>
+                    <div class="card-body">
+                        <div class="rate-badge highlight-green">16.00% APY <span class="rate-note">0% податків</span></div>
+                        <div class="math-row">
+                            <span class="label">Фінальна сума</span>
+                            <span class="value font-numeric" id="card-sum-1">0 ₴</span>
+                        </div>
+                        <div class="math-row divider">
+                            <span class="label">Чистий прибуток</span>
+                            <span class="value profit font-numeric" id="card-profit-1">+0 ₴</span>
+                        </div>
+                        <p class="card-comment" id="card-comment-1">Купується в Дії за дві секунди. Державна гарантія та жодної копійки податків.</p>
+                        <a href="https://bank.gov.ua/ua/open-data" target="_blank" rel="noopener noreferrer" class="card-api-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            Статистика ОВДП НБУ ↗
+                        </a>
+                    </div>
+                </article>
+
+                <!-- 3. USD Cash -->
+                <article class="invest-card glass" data-index="2">
+                    <div class="card-glow"></div>
+                    <header class="card-header">
+                        <div class="card-icon-box card-icon-cash">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="card-svg">
+                                <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                                <circle cx="12" cy="12" r="3"></circle>
+                                <path d="M6 12h.01M18 12h.01"></path>
+                            </svg>
+                        </div>
+                        <div class="card-title-group">
+                            <h3 class="card-title">Готівковий Долар</h3>
+                            <span class="card-badge badge-currency">Сховище під матрацом</span>
+                        </div>
+                    </header>
+                    <div class="card-body">
+                        <div class="rate-badge">8.77% APY <span class="rate-note">за рахунок росту курсу</span></div>
+                        <div class="math-row">
+                            <span class="label">Фінальна сума</span>
+                            <span class="value font-numeric" id="card-sum-2">0 ₴</span>
+                        </div>
+                        <div class="math-row divider">
+                            <span class="label">Чистий прибуток</span>
+                            <span class="value profit font-numeric" id="card-profit-2">+0 ₴</span>
+                        </div>
+                        <p class="card-comment" id="card-comment-2">Пасивний захист. Долар стабільно росте відносно гривні, рятуючи від інфляції.</p>
+                        <a href="https://bank.gov.ua/ua/open-data/api-dev" target="_blank" rel="noopener noreferrer" class="card-api-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            Живий курс API НБУ ↗
+                        </a>
+                    </div>
+                </article>
+
+                <!-- 4. Stablecoin / USD Deposit -->
+                <article class="invest-card glass" data-index="3">
+                    <div class="card-glow"></div>
+                    <header class="card-header">
+                        <div class="card-icon-box card-icon-crypto">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="card-svg">
+                                <path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"></path>
+                                <path d="M12 6v12M9 9h6M9 15h6"></path>
+                            </svg>
+                        </div>
+                        <div class="card-title-group">
+                            <h3 class="card-title">Валютний деп / USDT</h3>
+                            <span class="card-badge badge-crypto">Стабільність + APY</span>
+                        </div>
+                    </header>
+                    <div class="card-body">
+                        <div class="rate-badge">15.04% APY <span class="rate-note">курс + 6.0% відсотки</span></div>
+                        <div class="math-row">
+                            <span class="label">Фінальна сума</span>
+                            <span class="value font-numeric" id="card-sum-3">0 ₴</span>
+                        </div>
+                        <div class="math-row divider">
+                            <span class="label">Чистий прибуток</span>
+                            <span class="value profit font-numeric" id="card-profit-3">+0 ₴</span>
+                        </div>
+                        <p class="card-comment" id="card-comment-3">Стейкінг USDT на біржах чи валютний депозит. Подвійна вигода: ріст бакса + відсотки.</p>
+                        <a href="https://bank.gov.ua/ua/open-data/api-dev" target="_blank" rel="noopener noreferrer" class="card-api-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            Курс API НБУ + 6% APY ↗
+                        </a>
+                    </div>
+                </article>
+
+                <!-- 5. US Stocks (S&P 500) -->
+                <article class="invest-card glass" data-index="4">
+                    <div class="card-glow"></div>
+                    <header class="card-header">
+                        <div class="card-icon-box card-icon-stocks">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="card-svg">
+                                <path d="M3 3v18h18"></path>
+                                <path d="M18.7 8l-5.1 5.2-2.8-2.7L7 14.3"></path>
+                            </svg>
+                        </div>
+                        <div class="card-title-group">
+                            <h3 class="card-title">Акції США (S&P 500)</h3>
+                            <span class="card-badge badge-growth">Агресивний консерватизм</span>
+                        </div>
+                    </header>
+                    <div class="card-body">
+                        <div class="rate-badge highlight-blue">30.10% APY <span class="rate-note">індексний фонд (VOO)</span></div>
+                        <div class="math-row">
+                            <span class="label">Фінальна сума</span>
+                            <span class="value font-numeric" id="card-sum-4">0 ₴</span>
+                        </div>
+                        <div class="math-row divider">
+                            <span class="label">Чистий прибуток</span>
+                            <span class="value profit font-numeric" id="card-profit-4">+0 ₴</span>
+                        </div>
+                        <p class="card-comment" id="card-comment-4">Володіння часткою 500 найбільших гігантів (Apple, Microsoft, Nvidia). Чудовий ріст.</p>
+                        <a href="https://finance.yahoo.com/quote/%5EGSPC" target="_blank" rel="noopener noreferrer" class="card-api-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            S&P 500 Index ↗
+                        </a>
+                    </div>
+                </article>
+
+                <!-- 6. Gold (XAU) -->
+                <article class="invest-card glass gold-card" data-index="5">
+                    <div class="card-glow-gold"></div>
+                    <header class="card-header">
+                        <div class="card-icon-box card-icon-gold">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="card-svg">
+                                <path d="M6 3h12l4 6-10 12L2 9z"></path>
+                                <path d="M11 3L8 9l4 12 4-12-3-6"></path>
+                                <path d="M2 9h20"></path>
+                            </svg>
+                        </div>
+                        <div class="card-title-group">
+                            <h3 class="card-title">Золото (XAU)</h3>
+                            <span class="card-badge badge-gold">Абсолютний лідер 👑</span>
+                        </div>
+                    </header>
+                    <div class="card-body">
+                        <div class="rate-badge highlight-gold">61.38% APY <span class="rate-note">шалене світове ралі</span></div>
+                        <div class="math-row">
+                            <span class="label">Фінальна сума</span>
+                            <span class="value font-numeric" id="card-sum-5">0 ₴</span>
+                        </div>
+                        <div class="math-row divider">
+                            <span class="label">Чистий прибуток</span>
+                            <span class="value profit font-numeric" id="card-profit-5">+0 ₴</span>
+                        </div>
+                        <p class="card-comment" id="card-comment-5">Золоте Ельдорадо. Світова нестабільність штовхнула метал угору. Твій друг виявився супер-витратним.</p>
+                        <a href="https://bank.gov.ua/ua/open-data/api-dev" target="_blank" rel="noopener noreferrer" class="card-api-link">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line></svg>
+                            Метали API НБУ ↗
+                        </a>
+                    </div>
+                </article>
+
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <footer class="app-footer">
+            <p class="sources">Дані базуються на реальних історичних та поточних ринкових курсах, що завантажуються динамічно через відкриті API НБУ для валюти та золота, а також на індексі S&P 500. Розрахунки демонструють реальну альтернативную вартість капіталу.</p>
+            <p class="copyright">&copy; 2026. Створено з легким сарказмом та фінансовою мудрістю для твого друга.</p>
+        </footer>
+    </div>
+
+    <!-- Notification Toast (for Copy Action) -->
+    <div id="toast" class="toast hidden">
+        <span class="toast-icon">📋</span>
+        <span class="toast-message">Рахунок скопійовано! Надішли його в месенджер.</span>
+    </div>
+
+    <!-- Custom Script -->
+    <script src="app.js"></script>
+</body>
+</html>

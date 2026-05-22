@@ -1,0 +1,947 @@
+/* ==========================================================================
+   CSS Variables & Design System
+   ========================================================================== */
+:root {
+    --font-sans: 'Outfit', 'Inter', system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    
+    /* Colors */
+    --color-bg: #07080b;
+    --color-card-bg: rgba(18, 20, 28, 0.55);
+    --color-card-inset: rgba(10, 11, 16, 0.6);
+    --color-border: rgba(255, 255, 255, 0.07);
+    --color-border-hover: rgba(255, 255, 255, 0.15);
+    
+    --color-text-primary: #f3f4f6;
+    --color-text-muted: #9ca3af;
+    
+    --color-primary: #7c4dff;
+    --color-primary-glow: rgba(124, 77, 255, 0.15);
+    
+    --color-emerald: #00e676;
+    --color-emerald-glow: rgba(0, 230, 118, 0.15);
+    
+    --color-cyan: #00e5ff;
+    --color-cyan-glow: rgba(0, 229, 255, 0.15);
+    
+    --color-gold: #ffd700;
+    --color-gold-bg: rgba(255, 215, 0, 0.05);
+    --color-gold-border: rgba(255, 215, 0, 0.25);
+    --color-gold-glow: rgba(255, 215, 0, 0.2);
+    
+    --color-coral: #ff5252;
+    --color-coral-glow: rgba(255, 82, 82, 0.2);
+    
+    /* Gradients */
+    --gradient-brand: linear-gradient(135deg, #7c4dff 0%, #00e5ff 100%);
+    --gradient-gold: linear-gradient(135deg, #ffe066 0%, #ffd700 50%, #cca300 100%);
+    --gradient-green: linear-gradient(135deg, #00e676 0%, #00b0ff 100%);
+    --gradient-card-border: linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%);
+    
+    /* Layout */
+    --radius-lg: 20px;
+    --radius-md: 12px;
+    --radius-sm: 8px;
+    --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* ==========================================================================
+   Reset & Base Styles
+   ========================================================================== */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--color-bg);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    line-height: 1.5;
+    overflow-x: hidden;
+    min-height: 100vh;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+}
+
+/* Background Glow Effects */
+.background-glow {
+    position: fixed;
+    top: -200px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(124, 77, 255, 0.08) 0%, rgba(0, 229, 255, 0.02) 50%, rgba(0,0,0,0) 80%);
+    z-index: -1;
+    pointer-events: none;
+}
+
+.container {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 40px 24px;
+}
+
+.font-numeric {
+    font-variant-numeric: tabular-nums;
+    font-weight: 600;
+}
+
+/* ==========================================================================
+   Animations
+   ========================================================================== */
+.animate-fade-in {
+    animation: fadeIn 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================================================
+   Glassmorphism Helper
+   ========================================================================== */
+.glass {
+    background: var(--color-card-bg);
+    backdrop-filter: blur(16px) saturate(180%);
+    -webkit-backdrop-filter: blur(16px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.07);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 10px 30px -10px rgba(0, 0, 0, 0.5);
+    transition: var(--transition-smooth);
+}
+
+.glass-inset {
+    background: var(--color-card-inset);
+    border: 1px solid rgba(0, 0, 0, 0.2);
+    border-radius: var(--radius-md);
+}
+
+/* ==========================================================================
+   Header Styles
+   ========================================================================== */
+.app-header {
+    text-align: center;
+    margin-bottom: 56px;
+}
+
+.logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 16px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 100px;
+    margin-bottom: 24px;
+}
+
+.logo-emoji {
+    font-size: 1.1rem;
+}
+
+.logo-text {
+    font-size: 0.85rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.15em;
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.main-title {
+    font-size: 3rem;
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+    margin-bottom: 16px;
+}
+
+.gradient-text {
+    background: var(--gradient-brand);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.subtitle {
+    font-size: 1.15rem;
+    color: var(--color-text-muted);
+    max-width: 640px;
+    margin: 0 auto;
+    font-weight: 400;
+}
+
+/* ==========================================================================
+   Calculator Grid (Main Control Panel & Regret Panel)
+   ========================================================================== */
+.calculator-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: 32px;
+    margin-bottom: 64px;
+}
+
+.controls-panel {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.panel-title {
+    font-size: 1.4rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin-bottom: 8px;
+    border-left: 3px solid var(--color-primary);
+    padding-left: 12px;
+}
+
+.input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.input-group label {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+}
+
+/* Custom Number Input */
+.number-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.number-input-wrapper input {
+    width: 100%;
+    padding: 16px 70px 16px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    font-size: 1.3rem;
+    font-weight: 600;
+    transition: var(--transition-smooth);
+}
+
+.number-input-wrapper input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+/* Hide default spinners */
+.number-input-wrapper input::-webkit-outer-spin-button,
+.number-input-wrapper input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}
+.number-input-wrapper input[type=number] {
+    -moz-appearance: textfield;
+}
+
+.currency-badge {
+    position: absolute;
+    right: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    letter-spacing: 0.05em;
+    background: rgba(255, 255, 255, 0.05);
+    padding: 4px 8px;
+    border-radius: var(--radius-sm);
+    pointer-events: none;
+}
+
+/* Presets (Quick Select Buttons) */
+.presets-container {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+}
+
+.preset-btn {
+    padding: 10px 4px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-sm);
+    color: var(--color-text-muted);
+    font-family: var(--font-sans);
+    font-size: 0.85rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.preset-btn:hover {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-hover);
+}
+
+.preset-btn.active {
+    background: var(--color-primary-glow);
+    color: var(--color-cyan);
+    border-color: var(--color-cyan);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.1);
+}
+
+/* Custom Date Input */
+.date-input-wrapper {
+    position: relative;
+}
+
+.date-input-wrapper input {
+    width: 100%;
+    padding: 16px 20px;
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    font-size: 1.1rem;
+    font-weight: 500;
+    transition: var(--transition-smooth);
+    cursor: pointer;
+}
+
+.date-input-wrapper input:focus {
+    outline: none;
+    border-color: var(--color-primary);
+    box-shadow: 0 0 0 3px var(--color-primary-glow);
+}
+
+/* Status Info Box */
+.status-box {
+    padding: 18px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.status-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-indicator {
+    width: 8px;
+    height: 8px;
+    background: var(--color-cyan);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--color-cyan);
+    display: inline-block;
+    animation: pulseGlow 2s infinite alternate;
+}
+
+@keyframes pulseGlow {
+    from { transform: scale(1); opacity: 0.6; }
+    to { transform: scale(1.3); opacity: 1; }
+}
+
+.status-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.status-text {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.4;
+}
+
+/* ==========================================================================
+   Summary Panel & Regret Scale
+   ========================================================================== */
+.summary-panel {
+    padding: 40px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    border: 1px solid var(--color-gold-border);
+    background: radial-gradient(circle at top right, rgba(255, 215, 0, 0.03) 0%, rgba(18, 20, 28, 0.55) 70%);
+}
+
+.summary-meta {
+    margin-bottom: 12px;
+}
+
+.regret-badge {
+    background: var(--color-gold-bg);
+    border: 1px solid rgba(255, 215, 0, 0.15);
+    color: var(--color-gold);
+    font-size: 0.75rem;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 100px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.regret-title {
+    font-size: 1.1rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    margin-bottom: 4px;
+}
+
+.regret-value-wrapper {
+    display: flex;
+    align-items: baseline;
+    gap: 4px;
+    margin-bottom: 12px;
+}
+
+.regret-currency {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--color-gold);
+}
+
+.regret-amount {
+    font-size: 4rem;
+    font-weight: 800;
+    letter-spacing: -0.04em;
+    color: var(--color-gold);
+    line-height: 1;
+    text-shadow: 0 0 20px var(--color-gold-glow);
+}
+
+.regret-description {
+    font-size: 0.95rem;
+    color: var(--color-text-muted);
+    line-height: 1.5;
+    margin-bottom: 24px;
+    min-height: 48px; /* Prevents shifting when text changes */
+}
+
+/* Regret Scale Track */
+.regret-scale-container {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 32px;
+}
+
+.scale-label-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.scale-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 10px;
+    overflow: hidden;
+    position: relative;
+}
+
+.scale-fill {
+    height: 100%;
+    width: 50%;
+    background: linear-gradient(90deg, var(--color-emerald) 0%, var(--color-gold) 60%, var(--color-coral) 100%);
+    border-radius: 10px;
+    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Buttons */
+.action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    padding: 16px 24px;
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    font-weight: 600;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.btn-primary {
+    background: var(--gradient-brand);
+    color: #fff;
+    border: none;
+    box-shadow: 0 4px 15px rgba(124, 77, 255, 0.3);
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(124, 77, 255, 0.45);
+}
+
+.btn-primary:active {
+    transform: translateY(0);
+}
+
+.icon {
+    width: 20px;
+    height: 20px;
+}
+
+/* ==========================================================================
+   Results Grid Section
+   ========================================================================== */
+.results-section {
+    margin-top: 24px;
+}
+
+.section-heading {
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 8px;
+    text-align: center;
+}
+
+.section-subheading {
+    font-size: 1.05rem;
+    color: var(--color-text-muted);
+    text-align: center;
+    margin-bottom: 40px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 24px;
+}
+
+/* ==========================================================================
+   Investment Card Design
+   ========================================================================== */
+.invest-card {
+    position: relative;
+    padding: 30px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.invest-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--color-border-hover);
+    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6);
+}
+
+.card-glow {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.015) 0%, rgba(255, 255, 255, 0) 50%);
+    pointer-events: none;
+    z-index: 0;
+    transition: var(--transition-smooth);
+}
+
+.invest-card:hover .card-glow {
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.035) 0%, rgba(255, 255, 255, 0) 50%);
+}
+
+.card-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    z-index: 1;
+}
+
+/* Icon Box & Color Themes */
+.card-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border-radius: var(--radius-md);
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    color: var(--color-text-muted);
+}
+
+.card-icon-deposit { color: #818cf8; background: rgba(129, 140, 248, 0.1); border-color: rgba(129, 140, 248, 0.2); }
+.card-icon-bond { color: var(--color-emerald); background: var(--color-emerald-glow); border-color: rgba(0, 230, 118, 0.2); }
+.card-icon-cash { color: #34d399; background: rgba(52, 211, 153, 0.1); border-color: rgba(52, 211, 153, 0.2); }
+.card-icon-crypto { color: var(--color-cyan); background: var(--color-cyan-glow); border-color: rgba(0, 229, 255, 0.2); }
+.card-icon-stocks { color: #38bdf8; background: rgba(56, 189, 248, 0.1); border-color: rgba(56, 189, 248, 0.2); }
+.card-icon-gold { color: var(--color-gold); background: var(--color-gold-bg); border-color: var(--color-gold-border); }
+
+.card-svg {
+    width: 24px;
+    height: 24px;
+}
+
+.card-title-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.card-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+}
+
+.card-badge {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    padding: 2px 6px;
+    border-radius: 4px;
+    align-self: flex-start;
+}
+
+.badge-baseline { background: rgba(255, 255, 255, 0.05); color: var(--color-text-muted); }
+.badge-safe { background: rgba(0, 230, 118, 0.1); color: var(--color-emerald); }
+.badge-currency { background: rgba(52, 211, 153, 0.1); color: #34d399; }
+.badge-crypto { background: rgba(0, 229, 255, 0.1); color: var(--color-cyan); }
+.badge-growth { background: rgba(56, 189, 248, 0.1); color: #38bdf8; }
+.badge-gold { background: var(--color-gold-bg); color: var(--color-gold); border: 1px solid rgba(255, 215, 0, 0.15); }
+
+/* Card Body */
+.card-body {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    z-index: 1;
+}
+
+.rate-badge {
+    align-self: flex-start;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 100px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-text-muted);
+}
+
+.rate-badge.highlight-green {
+    background: rgba(0, 230, 118, 0.05);
+    border-color: rgba(0, 230, 118, 0.15);
+    color: var(--color-emerald);
+}
+
+.rate-badge.highlight-blue {
+    background: rgba(0, 229, 255, 0.05);
+    border-color: rgba(0, 229, 255, 0.15);
+    color: var(--color-cyan);
+}
+
+.rate-badge.highlight-gold {
+    background: var(--color-gold-bg);
+    border-color: var(--color-gold-border);
+    color: var(--color-gold);
+}
+
+.rate-note {
+    font-size: 0.7rem;
+    color: var(--color-text-muted);
+    font-weight: 400;
+    margin-left: 2px;
+}
+
+/* Math Rows */
+.math-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+.math-row .label {
+    color: var(--color-text-muted);
+}
+
+.math-row .value {
+    font-size: 1.15rem;
+    color: var(--color-text-primary);
+}
+
+.math-row.divider {
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 14px;
+}
+
+.math-row .value.profit {
+    color: var(--color-emerald);
+    font-size: 1.25rem;
+    text-shadow: 0 0 10px rgba(0, 230, 118, 0.1);
+}
+
+.card-comment {
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+    font-style: italic;
+    min-height: 40px;
+}
+
+/* ==========================================================================
+   Gold Card Extra Premium Styling
+   ========================================================================== */
+.gold-card {
+    border: 1px solid var(--color-gold-border);
+    background: radial-gradient(circle at center, rgba(255, 215, 0, 0.04) 0%, rgba(18, 20, 28, 0.6) 80%);
+    box-shadow: 0 5px 20px rgba(255, 215, 0, 0.03);
+}
+
+.gold-card:hover {
+    border-color: var(--color-gold);
+    box-shadow: 0 15px 35px -5px rgba(255, 215, 0, 0.15);
+}
+
+.card-glow-gold {
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.02) 0%, rgba(255, 215, 0, 0) 55%);
+    pointer-events: none;
+    z-index: 0;
+    transition: var(--transition-smooth);
+}
+
+.gold-card:hover .card-glow-gold {
+    background: radial-gradient(circle, rgba(255, 215, 0, 0.06) 0%, rgba(255, 215, 0, 0) 55%);
+}
+
+.card-glow-gold::after {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; bottom: 0;
+    box-shadow: inset 0 0 20px rgba(255, 215, 0, 0.02);
+    pointer-events: none;
+    border-radius: var(--radius-lg);
+}
+
+/* ==========================================================================
+   Footer
+   ========================================================================== */
+.app-footer {
+    margin-top: 80px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 32px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.sources {
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    max-width: 760px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+.copyright {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.25);
+}
+
+/* ==========================================================================
+   Toast Notification Panel
+   ========================================================================== */
+.toast {
+    position: fixed;
+    bottom: 40px;
+    left: 50%;
+    transform: translateX(-50%) translateY(0);
+    background: rgba(18, 20, 28, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid var(--color-cyan);
+    border-radius: 100px;
+    padding: 12px 24px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    box-shadow: 0 10px 30px rgba(0, 229, 255, 0.2);
+    z-index: 1000;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.toast.hidden {
+    opacity: 0;
+    bottom: 20px;
+    pointer-events: none;
+}
+
+.toast-icon {
+    font-size: 1.1rem;
+}
+
+.toast-message {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+}
+
+/* ==========================================================================
+   Loading States & API Links
+   ========================================================================== */
+/* API Links inside Investment Cards */
+.card-api-link {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 6px;
+    align-self: flex-start;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.15);
+    transition: var(--transition-smooth);
+    z-index: 2;
+}
+
+.card-api-link:hover {
+    color: var(--color-cyan);
+    border-color: var(--color-cyan);
+}
+
+.card-api-link svg {
+    width: 10px;
+    height: 10px;
+    opacity: 0.7;
+    transition: var(--transition-smooth);
+}
+
+.card-api-link:hover svg {
+    opacity: 1;
+    transform: translate(1px, -1px);
+}
+
+/* Status Indicator Loading State */
+.status-indicator.loading {
+    background: var(--color-gold) !important;
+    box-shadow: 0 0 10px var(--color-gold) !important;
+}
+
+/* Input Panel Block during Loading */
+.controls-panel.loading-state {
+    pointer-events: none;
+    opacity: 0.8;
+}
+
+/* Shimmer Skeletal Effect */
+.loading-shimmer {
+    position: relative;
+    overflow: hidden;
+}
+
+.loading-shimmer::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.03) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: translateX(-100%);
+    animation: shimmer 1.5s infinite;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.invest-card.loading .value,
+.invest-card.loading .profit,
+.regret-amount.loading {
+    opacity: 0.3;
+    transition: opacity 0.3s ease;
+}
+
+@keyframes shimmer {
+    100% {
+        transform: translateX(100%);
+    }
+}
+
+/* ==========================================================================
+   Responsive Adaptations (Breakpoints)
+   ========================================================================== */
+@media (max-width: 1024px) {
+    .cards-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .container {
+        padding: 24px 16px;
+    }
+    
+    .app-header {
+        margin-bottom: 40px;
+    }
+    
+    .main-title {
+        font-size: 2.3rem;
+    }
+    
+    .calculator-grid {
+        grid-template-columns: 1fr;
+        gap: 24px;
+    }
+    
+    .controls-panel, .summary-panel {
+        padding: 24px;
+    }
+    
+    .cards-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+    
+    .regret-amount {
+        font-size: 3.2rem;
+    }
+}
