@@ -194,6 +194,17 @@ document.addEventListener('DOMContentLoaded', () => {
     debtInput.addEventListener('input', handleDebtChange);
     issueDateInput.addEventListener('change', handleDateChange);
     
+    // Explicit trigger for Chrome calendar picker on clicking anywhere inside the input box
+    issueDateInput.addEventListener('click', () => {
+        if (typeof issueDateInput.showPicker === 'function') {
+            try {
+                issueDateInput.showPicker();
+            } catch (err) {
+                console.warn("showPicker failed:", err);
+            }
+        }
+    });
+    
     presetButtons.forEach(btn => {
         btn.addEventListener('click', handlePresetClick);
     });
@@ -500,7 +511,7 @@ async function calculateAndUpdate() {
     } else if (regretPercentage > 65 && regretPercentage < 100) {
         regretComment = "Роздратування! Гроші знецінюються, а набігли б солідні кошти. Ти спонсоруєш чуже життя безкоштовно!";
     } else if (regretPercentage === 100) {
-        regretComment = "ЛЮТЬ! Втрачена вигода перевищила 20% від боргу! Поки твій друг тягне час, золото чи акції принесли б тобі цілий статок. Пора діяти!";
+        regretComment = "ЛЮТЬ! Втрачена вигода перевищила 40% від боргу! Поки твій друг тягне час, золото чи акції принесли б тобі цілий статок. Пора діяти!";
     }
     regretCommentText.textContent = regretComment;
 }
