@@ -247,6 +247,46 @@ const LANGUAGES = {
             "¡Irritación! Tu dinero se devalúa mientras podría haber generado ganancias sólidas. ¡Estás patrocinando la vida de alguien gratis!",
             "¡FURIA PURA! ¡La ganancia perdida superó el 40% de la deuda! Mientras tu amigo da largas, el oro o las acciones te habrían hecho ganar una fortuna. ¡Es hora de actuar!"
         ]
+    },
+    it: {
+        titleGreeting: "Amico",
+        titleQuestion: ", dov'è il mio <span class=\"gradient-text\">denaro?</span>",
+        subtitle: "Prestare denaro a un amico allo 0% è nobile. Ma se quel denaro stesse lavorando sul mercato mentre aspetti la restituzione?",
+        controlsTitle: "Impostazioni del Debito",
+        amountLabel: "Importo del debito, UAH",
+        placeholderAmount: "Inserisci l'importo",
+        dateLabel: "Quando è stato prestato?",
+        statusTitle: "Durata del Mancato Pagamento",
+        statusLoading: "Caricamento...",
+        regretBadge: "Fattore di Rimpianto 💔",
+        regretTitle: "Il profitto perso è",
+        notchCalm: "Zen (0%)",
+        notchDoubts: "Dubbi (10%)",
+        notchAnxiety: "Ansia (20%)",
+        notchAnger: "Rabbia (30%)",
+        notchFury: "Furia Pura (40%+)",
+        hintBtn: "Invia una frecciatina al tuo amico",
+        resultsHeading: "Scenari di Investimento Alternativi",
+        resultsSubheading: "Ecco quanto avrebbe generato quel denaro se fosse stato investito ai tassi APY effettivi durante questo periodo:",
+        modalTitleText: "Traiettoria di Crescita dell'Investimento",
+        modalStartLabel: "Debito Iniziale",
+        modalProfitLabel: "Profitto Netto",
+        modalEndLabel: "Valore Finale",
+        modalInstructionText: "💡 <strong>Istruzioni:</strong> Passa il mouse (o tocca su mobile) sul grafico per vedere i valori mensili dettagliati.",
+        sources: "I dati si basano sui tassi di mercato storici e attuali, caricati dinamicamente tramite le API pubbliche della NBU per valute e oro, nonché sull'indice S&P 500. I calcoli dimostrano il reale costo opportunità del capitale.",
+        copyright: "© 2026. Creato con un tocco di sarcasmo e saggezza finanziaria per il tuo amico.",
+        toastText: "Fattura copiata! Inviagli un messaggio.",
+        netProfit: "Profitto Netto",
+        finalSum: "Importo Finale",
+        cardChartHint: "Clicca per analizzare il grafico 📈",
+        regretComments: [
+            "Nessun debito: coscienza pulita, portafoglio vuoto. Tutti felici.",
+            "Accettazione. La perdita è simbolica, ma il tuo amico si è già comprato qualche caffè premium a tue spese.",
+            "Dubbi. Gli interessi crescono più velocemente della tua fiducia che questo debito venga restituito a breve.",
+            "Ansia! Questo prestito senza interessi avrebbe potuto essere una bella vacanza o un nuovo gadget. Il tuo amico si rilassa, tu conti monete virtuali.",
+            "Irritazione! Il tuo denaro si svaluta, mentre avrebbe potuto generare profitti solidi. Stai sponsorizzando la vita di qualcuno gratis!",
+            "FURIA PURA! Il profitto perso ha superato il 40% del debito! Mentre il tuo amico prende tempo, l'oro o le azioni ti avrebbero fatto guadagnare una fortuna. È ora di agire!"
+        ]
     }
 };
 
@@ -401,6 +441,14 @@ const INVESTMENTS_DATA_BY_CURRENCY = {
             { name: "Depósito USD / Staking USDT", badge: "Doble Beneficio", comment: "Staking de USDT en exchanges o depósito en USD. Doble beneficio: crecimiento de la divisa + intereses.", source: "Cambio NBU + 6% APY ↗" },
             { name: "Índice S&P 500", badge: "Acciones de EE.UU.", comment: "Poseer una parte de los 500 gigantes mundiales (Apple, Microsoft, Nvidia). Crecimiento fantástico.", source: "Índice S&P 500 ↗" },
             { name: "Oro (XAU)", badge: "Líder Absoluto 👑", comment: "El Dorado del oro. La inestabilidad global disparó el precio del oro. Tu amigo te sale súper caro.", source: "API de Tasa de Oro / NBU ↗" }
+        ],
+        it: [
+            { name: "Deposito Bancario in UAH", badge: "Scenario Base", comment: "Il modo più semplice. Persino la banca supera il tuo amico in affidabilità.", source: "Tassi UIRD / API NBU ↗" },
+            { name: "Titoli di Stato (UAH)", badge: "Massima Sicurezza", comment: "Acquistati nell'app Diia in due secondi. Garantiti dallo stato e 100% esentasse.", source: "Statistiche Titoli / NBU ↗" },
+            { name: "Dollaro in Contanti (USD)", badge: "Protezione dall'Inflazione", comment: "Scudo passivo. Il dollaro cresce stabilmente contro la grivna, salvandoti dall'inflazione.", source: "API Cambio in Tempo Reale / NBU ↗" },
+            { name: "Deposito USD / Staking USDT", badge: "Doppio Vantaggio", comment: "Staking di USDT sugli exchange o deposito in USD. Doppio vantaggio: crescita della valuta + interessi.", source: "Cambio NBU + 6% APY ↗" },
+            { name: "Indice S&P 500", badge: "Azioni USA", comment: "Possedere una fetta dei 500 giganti globali (Apple, Microsoft, Nvidia). Crescita fantastica.", source: "Indice S&P 500 ↗" },
+            { name: "Oro (XAU)", badge: "Leader Assoluto 👑", comment: "L'Eldorado dell'oro. L'instabilità globale ha spinto il prezzo dell'oro alle stelle. Il tuo amico ti costa tantissimo.", source: "API Tasso Oro / NBU ↗" }
         ]
     },
     USD: {
@@ -430,6 +478,14 @@ const INVESTMENTS_DATA_BY_CURRENCY = {
             { name: "Índice S&P 500 (VOO)", badge: "Acciones de EE.UU.", comment: "Poseer una parte de los 500 gigantes mundiales (Apple, Microsoft, Nvidia). Crecimiento excepcional.", source: "Índice S&P 500 ↗" },
             { name: "NASDAQ-100 (QQQ)", badge: "Crecimiento Tecnológico", comment: "Las 100 mayores empresas tech. Nvidia, Meta, Tesla — motores de la economía.", source: "Invesco QQQ ETF ↗" },
             { name: "Oro (XAU)", badge: "Líder Absoluto 👑", comment: "Cobertura confiable contra la inflación. El oro bate récords por la incertidumbre geopolítica.", source: "Precio Spot del Oro ↗" }
+        ],
+        it: [
+            { name: "Conto di Risparmio (HYSA)", badge: "Scenario Base", comment: "L'opzione statunitense più popolare: conto di risparmio ad alto rendimento. Assicurato FDIC.", source: "Marcus / Ally Bank ↗" },
+            { name: "Buoni del Tesoro (T-Bills)", badge: "Massima Sicurezza", comment: "Garantiti dal governo degli Stati Uniti. Esenti da tasse statali.", source: "US Treasury Direct ↗" },
+            { name: "Obbligazioni Corporate (LQD)", badge: "Rendimento Difensivo", comment: "ETF di obbligazioni corporate di alta qualità: Amazon, Apple, JPMorgan. Reddito stabile.", source: "iShares LQD ETF ↗" },
+            { name: "Indice S&P 500 (VOO)", badge: "Azioni USA", comment: "Possedere una fetta dei 500 giganti globali (Apple, Microsoft, Nvidia). Crescita eccezionale.", source: "Indice S&P 500 ↗" },
+            { name: "NASDAQ-100 (QQQ)", badge: "Crescita Tecnologica", comment: "Le 100 maggiori aziende tech. Nvidia, Meta, Tesla — motori dell'economia.", source: "Invesco QQQ ETF ↗" },
+            { name: "Oro (XAU)", badge: "Leader Assoluto 👑", comment: "Copertura affidabile contro l'inflazione. L'oro batte record per l'incertezza geopolitica.", source: "Prezzo Spot Oro ↗" }
         ]
     },
     EUR: {
@@ -459,6 +515,14 @@ const INVESTMENTS_DATA_BY_CURRENCY = {
             { name: "Índice EURO STOXX 50", badge: "Índice de la Eurozona", comment: "Las 50 mayores empresas de Europa: ASML, Hermès, SAP. Crecimiento estable.", source: "EURO STOXX 50 ↗" },
             { name: "Índice DAX 40 (Alemania)", badge: "Crecimiento Agresivo", comment: "Los 40 líderes de Alemania: Siemens, SAP, BMW. Potencia industrial.", source: "Índice DAX 40 ↗" },
             { name: "Oro (XAU en EUR)", badge: "Líder Absoluto 👑", comment: "El oro en EUR alcanza récords. Cobertura clásica contra la inflación.", source: "Oro / EUR ↗" }
+        ],
+        it: [
+            { name: "Deposito di Risparmio (Eurozona)", badge: "Scenario Base", comment: "Risparmio ad alto rendimento in una banca europea. Protetto fino a €100.000.", source: "Tasso Deposito BCE ↗" },
+            { name: "Titoli di Stato Tedeschi (Bunds)", badge: "Massima Sicurezza", comment: "Bundesbank — il debitore più affidabile d'Europa. Il gold standard delle obbligazioni.", source: "Deutsche Bundesbank ↗" },
+            { name: "Obbligazioni Corporate UE (IEAC)", badge: "Rendimento Difensivo", comment: "ETF di obbligazioni corporate di alta qualità: Siemens, LVMH, SAP.", source: "iShares IEAC ETF ↗" },
+            { name: "Indice EURO STOXX 50", badge: "Indice dell'Eurozona", comment: "Le 50 maggiori aziende europee: ASML, Hermès, SAP. Crescita stabile.", source: "EURO STOXX 50 ↗" },
+            { name: "Indice DAX 40 (Germania)", badge: "Crescita Aggressiva", comment: "I 40 leader della Germania: Siemens, SAP, BMW. Potenza industriale.", source: "Indice DAX 40 ↗" },
+            { name: "Oro (XAU in EUR)", badge: "Leader Assoluto 👑", comment: "L'oro in EUR raggiunge record. Copertura classica contro l'inflazione.", source: "Oro / EUR ↗" }
         ]
     },
     GBP: {
@@ -488,6 +552,14 @@ const INVESTMENTS_DATA_BY_CURRENCY = {
             { name: "Índice FTSE 100", badge: "Acciones UK", comment: "Las 100 mayores empresas de la Bolsa de Londres: Shell, AstraZeneca, HSBC. Campeones de dividendos.", source: "Índice FTSE 100 ↗" },
             { name: "Índice FTSE 250", badge: "Crecimiento Mid-cap", comment: "250 empresas medianas del Reino Unido. Mayor riesgo, mayor potencial de crecimiento.", source: "Índice FTSE 250 ↗" },
             { name: "Oro (XAU en GBP)", badge: "Líder Absoluto 👑", comment: "El oro en GBP en niveles récord. Cobertura clásica contra la devaluación de la libra.", source: "Oro / GBP ↗" }
+        ],
+        it: [
+            { name: "Conto di Risparmio ISA (UK)", badge: "Scenario Base", comment: "Cash ISA britannico — interessi completamente esentasse. Protetto fino a £85.000 dalla FSCS.", source: "Bank of England ↗" },
+            { name: "Titoli di Stato UK (Gilts)", badge: "Massima Sicurezza", comment: "Titoli di stato di Sua Maestà. Tradizione secolare di affidabilità dalla Banca d'Inghilterra.", source: "UK Gilts / DMO ↗" },
+            { name: "Obbligazioni Corporate UK (SLXX)", badge: "Rendimento Difensivo", comment: "ETF delle migliori obbligazioni corporate del Regno Unito: Shell, HSBC, Unilever.", source: "iShares SLXX ETF ↗" },
+            { name: "Indice FTSE 100", badge: "Azioni UK", comment: "Le 100 maggiori aziende della Borsa di Londra: Shell, AstraZeneca, HSBC. Campioni di dividendi.", source: "Indice FTSE 100 ↗" },
+            { name: "Indice FTSE 250", badge: "Crescita Mid-cap", comment: "250 aziende di medie dimensioni nel Regno Unito. Rischio maggiore, maggiore potenziale di crescita.", source: "Indice FTSE 250 ↗" },
+            { name: "Oro (XAU in GBP)", badge: "Leader Assoluto 👑", comment: "L'oro in GBP a livelli record. Copertura classica contro la svalutazione della sterlina.", source: "Oro / GBP ↗" }
         ]
     }
 };
@@ -1008,6 +1080,8 @@ function applyLanguage(lang) {
             nameInput.placeholder = "ім'я";
         } else if (lang === 'es') {
             nameInput.placeholder = "nombre";
+        } else if (lang === 'it') {
+            nameInput.placeholder = "nome";
         } else {
             nameInput.placeholder = "name";
         }
