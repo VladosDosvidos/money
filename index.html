@@ -69,7 +69,14 @@
                     <label for="debt-amount" data-i18n="amount-label">Сума боргу, грн</label>
                     <div class="number-input-wrapper">
                         <input type="number" id="debt-amount" min="1" max="100000000" value="50000" placeholder="Введіть суму">
-                        <span class="currency-badge">UAH</span>
+                        <div class="currency-select-container">
+                            <select id="debt-currency" class="currency-select">
+                                <option value="UAH">UAH (₴)</option>
+                                <option value="USD">USD ($)</option>
+                                <option value="EUR">EUR (€)</option>
+                                <option value="GBP">GBP (£)</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
                 

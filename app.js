@@ -6,13 +6,49 @@ const TODAY = new Date('2026-05-22');
 
 // NBU Fixed Target Date (May 22, 2026) rates
 const NBU_END_USD = 44.2341;
+const NBU_END_EUR = 49.7150;
+const NBU_END_GBP = 59.0420;
 const NBU_END_XAU = 199614.34;
 const SP500_END = 7433;
 
 // Default Start Date (Aug 22, 2025) rates for instant initial render
 const NBU_START_USD_DEFAULT = 41.2185;
+const NBU_START_EUR_DEFAULT = 44.9125;
+const NBU_START_GBP_DEFAULT = 52.8450;
 const NBU_START_XAU_DEFAULT = 137415.47;
 const SP500_START_DEFAULT = 6460;
+
+// Currency configuration: symbols, presets, defaults, locale formats
+const CURRENCY_CONFIG = {
+    UAH: {
+        symbol: '₴', position: 'suffix',
+        presets: [10000, 20000, 50000, 100000, 250000, 500000],
+        presetLabels: ['10k', '20k', '50k', '100k', '250k', '500k'],
+        defaultDebt: 50000, defaultPresetIndex: 2,
+        locale: 'uk-UA'
+    },
+    USD: {
+        symbol: '$', position: 'prefix',
+        presets: [1000, 2000, 5000, 10000, 25000, 50000],
+        presetLabels: ['1k', '2k', '5k', '10k', '25k', '50k'],
+        defaultDebt: 5000, defaultPresetIndex: 2,
+        locale: 'en-US'
+    },
+    EUR: {
+        symbol: '€', position: 'prefix',
+        presets: [1000, 2000, 5000, 10000, 25000, 50000],
+        presetLabels: ['1k', '2k', '5k', '10k', '25k', '50k'],
+        defaultDebt: 5000, defaultPresetIndex: 2,
+        locale: 'de-DE'
+    },
+    GBP: {
+        symbol: '£', position: 'prefix',
+        presets: [1000, 2000, 5000, 10000, 25000, 50000],
+        presetLabels: ['1k', '2k', '5k', '10k', '25k', '50k'],
+        defaultDebt: 5000, defaultPresetIndex: 2,
+        locale: 'en-GB'
+    }
+};
 
 // S&P 500 Index monthly close price history for linear interpolation
 const SP500_HISTORY = {
@@ -323,9 +359,138 @@ const INVESTMENTS_DATA_I18N = {
     ]
 };
 
+/* ==========================================================================
+   Per-Currency Investment Instruments Registry (4 currencies × 3 languages)
+   ========================================================================== */
+const INVESTMENTS_DATA_BY_CURRENCY = {
+    UAH: {
+        // Fallback APYs for each of the 6 UAH instruments
+        fallbackApys: [0.1078, 0.1600, 0.0877, 0.1504, 0.3010, 0.6138],
+        // Which indexes use dynamic calculation (not simple APY compound): 2=USD Cash, 3=USDT, 4=S&P, 5=Gold
+        dynamicIndexes: [2, 3, 4, 5],
+        badgeClasses: ['badge-baseline', 'badge-safe', 'badge-currency', 'badge-crypto', 'badge-growth', 'badge-gold'],
+        uk: [
+            { name: "Депозит у гривні", badge: "Базовий сценарій", comment: "Найпростіший спосіб. Навіть банк переганяє твого друга за надійністю.", source: "Дані UIRD / API НБУ ↗" },
+            { name: "ОВДП (Гривня)", badge: "Максимум безпеки", comment: "Купується в Дії за дві секунди. Державна гарантія та жодної копійки податків.", source: "Статистика ОВДП НБУ ↗" },
+            { name: "Готівковий Долар (USD)", badge: "Захист від інфляції", comment: "Пасивний захист. Долар стабільно росте відносно гривні, рятуючи від інфляції.", source: "Живий курс API НБУ ↗" },
+            { name: "Валютний депозит / Стейкінг", badge: "Подвійна вигода", comment: "Стейкінг USDT на біржах чи валютний депозит. Подвійна вигода: ріст бакса + відсотки.", source: "Курс API НБУ + 6% APY ↗" },
+            { name: "Індекс S&P 500", badge: "Акції США", comment: "Володіння часткою 500 найбільших гігантів (Apple, Microsoft, Nvidia). Чудовий ріст.", source: "S&P 500 Index ↗" },
+            { name: "Золото (XAU)", badge: "Абсолютний лідер 👑", comment: "Золоте Ельдорадо. Світова нестабільність штовхнула метал угору. Твій друг виявився супер-витратним.", source: "Метали API НБУ ↗" }
+        ],
+        en: [
+            { name: "UAH Bank Deposit", badge: "Baseline Scenario", comment: "The easiest way. Even a bank beats your friend in terms of reliability.", source: "UIRD Rates / NBU API ↗" },
+            { name: "OVDP Bonds (UAH)", badge: "Maximum Safety", comment: "Bought in Diia app in two seconds. Government-backed and 100% tax-free.", source: "Bonds Statistics / NBU ↗" },
+            { name: "Cash Dollar (USD)", badge: "Inflation Protection", comment: "Passive shield. The Dollar stably grows against the UAH, saving you from inflation.", source: "Live Exchange API / NBU ↗" },
+            { name: "USD Deposit / USDT Staking", badge: "Double Benefit", comment: "Staking USDT on exchanges or USD deposit. Double benefit: currency growth + interest.", source: "NBU Exchange + 6% APY ↗" },
+            { name: "S&P 500 Index", badge: "US Stocks", comment: "Owning a slice of 500 global giants (Apple, Microsoft, Nvidia). Fantastic growth.", source: "S&P 500 Index ↗" },
+            { name: "Gold (XAU)", badge: "Absolute Leader 👑", comment: "Gold Eldorado. Global instability pushed gold sky-high. Your friend is super expensive.", source: "Gold Rate API / NBU ↗" }
+        ],
+        es: [
+            { name: "Depósito Bancario en UAH", badge: "Escenario Base", comment: "La forma más fácil. Incluso el banco supera a tu amigo en confiabilidad.", source: "Tasas UIRD / API NBU ↗" },
+            { name: "Bonos del Estado (UAH)", badge: "Máxima Seguridad", comment: "Comprado en la aplicación Diia en dos segundos. Respaldado por el gobierno y 100% libre de impuestos.", source: "Estadísticas de Bonos / NBU ↗" },
+            { name: "Dólar en Efectivo (USD)", badge: "Protección contra la Inflación", comment: "Escudo pasivo. El Dólar sube de forma estable frente al UAH, salvándote de la inflación.", source: "API de Cambio en Vivo / NBU ↗" },
+            { name: "Depósito USD / Staking USDT", badge: "Doble Beneficio", comment: "Staking de USDT en exchanges o depósito en USD. Doble beneficio: crecimiento de la divisa + intereses.", source: "Cambio NBU + 6% APY ↗" },
+            { name: "Índice S&P 500", badge: "Acciones de EE.UU.", comment: "Poseer una parte de los 500 gigantes mundiales (Apple, Microsoft, Nvidia). Crecimiento fantástico.", source: "Índice S&P 500 ↗" },
+            { name: "Oro (XAU)", badge: "Líder Absoluto 👑", comment: "El Dorado del oro. La inestabilidad global disparó el precio del oro. Tu amigo te sale súper caro.", source: "API de Tasa de Oro / NBU ↗" }
+        ]
+    },
+    USD: {
+        fallbackApys: [0.0450, 0.0500, 0.0580, 0.1500, 0.3500, 0.4500],
+        dynamicIndexes: [3, 4, 5], // S&P 500, NASDAQ proxy, Gold — are dynamic
+        badgeClasses: ['badge-baseline', 'badge-safe', 'badge-currency', 'badge-growth', 'badge-growth', 'badge-gold'],
+        uk: [
+            { name: "Ощадний рахунок (HYSA)", badge: "Базовий сценарій", comment: "Найпопулярніший американський варіант — високоприбутковий ощадний рахунок у банку США.", source: "Marcus / Ally Bank ↗" },
+            { name: "Казначейські облігації (T-Bills)", badge: "Максимум безпеки", comment: "Облігації Мінфіну США, забезпечені «повною вірою та кредитом» уряду. Без оподаткування штатів.", source: "US Treasury Direct ↗" },
+            { name: "Корпоративні облігації (LQD)", badge: "Захисний дохід", comment: "Інвестиційний ETF на надійні корпоративні облігації гігантів Amazon, Apple, JPMorgan.", source: "iShares LQD ETF ↗" },
+            { name: "Індекс S&P 500 (VOO)", badge: "Акції США", comment: "Володіння часткою 500 найбільших гігантів (Apple, Microsoft, Nvidia). Чудовий ріст.", source: "S&P 500 Index ↗" },
+            { name: "NASDAQ-100 (QQQ)", badge: "Технологічний ріст", comment: "Фонд 100 найбільших технологічних компаній. Nvidia, Meta, Tesla — двигуни зростання.", source: "Invesco QQQ ETF ↗" },
+            { name: "Золото (XAU)", badge: "Абсолютний лідер 👑", comment: "Надійний захист від інфляції. Золото б'є рекорди на тлі геополітичної невизначеності.", source: "Gold Spot Price ↗" }
+        ],
+        en: [
+            { name: "High-Yield Savings (HYSA)", badge: "Baseline Scenario", comment: "The most popular US option — a high-yield savings account at a top bank. FDIC insured.", source: "Marcus / Ally Bank ↗" },
+            { name: "US Treasury Bills (T-Bills)", badge: "Maximum Safety", comment: "Backed by the full faith and credit of the US government. State-tax exempt.", source: "US Treasury Direct ↗" },
+            { name: "Corporate Bonds (LQD ETF)", badge: "Defensive Yield", comment: "Investment-grade corporate bond ETF — Amazon, Apple, JPMorgan. Steady income.", source: "iShares LQD ETF ↗" },
+            { name: "S&P 500 Index (VOO)", badge: "US Stocks", comment: "Own a piece of 500 global giants (Apple, Microsoft, Nvidia). Outstanding growth.", source: "S&P 500 Index ↗" },
+            { name: "NASDAQ-100 (QQQ)", badge: "Tech Growth", comment: "The 100 biggest tech companies. Nvidia, Meta, Tesla — growth engines of the economy.", source: "Invesco QQQ ETF ↗" },
+            { name: "Gold (XAU)", badge: "Absolute Leader 👑", comment: "A reliable inflation hedge. Gold hits records amid geopolitical uncertainty.", source: "Gold Spot Price ↗" }
+        ],
+        es: [
+            { name: "Cuenta de Ahorro (HYSA)", badge: "Escenario Base", comment: "La opción más popular en EE.UU. — cuenta de ahorro de alto rendimiento. Asegurada por la FDIC.", source: "Marcus / Ally Bank ↗" },
+            { name: "Letras del Tesoro (T-Bills)", badge: "Máxima Seguridad", comment: "Respaldados por el gobierno de EE.UU. Exentos de impuestos estatales.", source: "US Treasury Direct ↗" },
+            { name: "Bonos Corporativos (LQD)", badge: "Rendimiento Defensivo", comment: "ETF de bonos corporativos de grado de inversión: Amazon, Apple, JPMorgan. Ingresos estables.", source: "iShares LQD ETF ↗" },
+            { name: "Índice S&P 500 (VOO)", badge: "Acciones de EE.UU.", comment: "Poseer una parte de los 500 gigantes mundiales (Apple, Microsoft, Nvidia). Crecimiento excepcional.", source: "Índice S&P 500 ↗" },
+            { name: "NASDAQ-100 (QQQ)", badge: "Crecimiento Tecnológico", comment: "Las 100 mayores empresas tech. Nvidia, Meta, Tesla — motores de la economía.", source: "Invesco QQQ ETF ↗" },
+            { name: "Oro (XAU)", badge: "Líder Absoluto 👑", comment: "Cobertura confiable contra la inflación. El oro bate récords por la incertidumbre geopolítica.", source: "Precio Spot del Oro ↗" }
+        ]
+    },
+    EUR: {
+        fallbackApys: [0.0325, 0.0260, 0.0390, 0.1150, 0.1380, 0.4200],
+        dynamicIndexes: [5], // Only Gold is dynamic via cross-rate
+        badgeClasses: ['badge-baseline', 'badge-safe', 'badge-currency', 'badge-growth', 'badge-growth', 'badge-gold'],
+        uk: [
+            { name: "Депозит у єврозоні (HYSA)", badge: "Базовий сценарій", comment: "Високоприбутковий ощадний рахунок у європейських банках із захистом до €100 000.", source: "ECB Deposit Rate ↗" },
+            { name: "Облігації Німеччини (Bunds)", badge: "Максимум безпеки", comment: "Бундесбанк — найнадійніший боржник Європи. Золотий стандарт облігацій єврозони.", source: "Deutsche Bundesbank ↗" },
+            { name: "Корпоративні облігації ЄС (IEAC)", badge: "Захисний дохід", comment: "ETF на найякісніші корпоративні облігації єврозони: Siemens, LVMH, SAP.", source: "iShares IEAC ETF ↗" },
+            { name: "EURO STOXX 50", badge: "Індекс єврозони", comment: "50 найбільших компаній Європи: ASML, Hermès, SAP. Стабільний індексний ріст.", source: "EURO STOXX 50 ↗" },
+            { name: "Індекс DAX 40 (Німеччина)", badge: "Агресивний ріст", comment: "40 лідерів Німеччини: Siemens, SAP, BMW. Потужна промислова економіка.", source: "DAX 40 Index ↗" },
+            { name: "Золото (XAU в EUR)", badge: "Абсолютний лідер 👑", comment: "Золото в євро досягає рекордів. Класичний захист від інфляції та невизначеності.", source: "Gold / EUR ↗" }
+        ],
+        en: [
+            { name: "Eurozone Savings Deposit", badge: "Baseline Scenario", comment: "High-yield savings at a European bank. Protected up to €100,000 by deposit guarantee.", source: "ECB Deposit Rate ↗" },
+            { name: "German Bonds (Bunds)", badge: "Maximum Safety", comment: "Bundesbank — Europe's most reliable borrower. The gold standard of Eurozone bonds.", source: "Deutsche Bundesbank ↗" },
+            { name: "EU Corporate Bonds (IEAC)", badge: "Defensive Yield", comment: "ETF of top-quality Eurozone corporate bonds: Siemens, LVMH, SAP.", source: "iShares IEAC ETF ↗" },
+            { name: "EURO STOXX 50 Index", badge: "Eurozone Index", comment: "Europe's 50 biggest companies: ASML, Hermès, SAP. Steady index growth.", source: "EURO STOXX 50 ↗" },
+            { name: "DAX 40 Index (Germany)", badge: "Aggressive Growth", comment: "Germany's top 40: Siemens, SAP, BMW. Powerhouse industrial economy.", source: "DAX 40 Index ↗" },
+            { name: "Gold (XAU in EUR)", badge: "Absolute Leader 👑", comment: "Gold in EUR hits records. A classic hedge against inflation and uncertainty.", source: "Gold / EUR ↗" }
+        ],
+        es: [
+            { name: "Depósito de Ahorro (Eurozona)", badge: "Escenario Base", comment: "Ahorro de alto rendimiento en un banco europeo. Protegido hasta €100.000.", source: "Tasa de Depósito BCE ↗" },
+            { name: "Bonos de Alemania (Bunds)", badge: "Máxima Seguridad", comment: "Bundesbank — el prestatario más confiable de Europa. El estándar de oro de los bonos.", source: "Deutsche Bundesbank ↗" },
+            { name: "Bonos Corporativos UE (IEAC)", badge: "Rendimiento Defensivo", comment: "ETF de bonos corporativos de alta calidad: Siemens, LVMH, SAP.", source: "iShares IEAC ETF ↗" },
+            { name: "Índice EURO STOXX 50", badge: "Índice de la Eurozona", comment: "Las 50 mayores empresas de Europa: ASML, Hermès, SAP. Crecimiento estable.", source: "EURO STOXX 50 ↗" },
+            { name: "Índice DAX 40 (Alemania)", badge: "Crecimiento Agresivo", comment: "Los 40 líderes de Alemania: Siemens, SAP, BMW. Potencia industrial.", source: "Índice DAX 40 ↗" },
+            { name: "Oro (XAU en EUR)", badge: "Líder Absoluto 👑", comment: "El oro en EUR alcanza récords. Cobertura clásica contra la inflación.", source: "Oro / EUR ↗" }
+        ]
+    },
+    GBP: {
+        fallbackApys: [0.0440, 0.0420, 0.0510, 0.0850, 0.1080, 0.3900],
+        dynamicIndexes: [5], // Only Gold is dynamic via cross-rate
+        badgeClasses: ['badge-baseline', 'badge-safe', 'badge-currency', 'badge-growth', 'badge-growth', 'badge-gold'],
+        uk: [
+            { name: "Ощадний рахунок ISA (UK)", badge: "Базовий сценарій", comment: "Британський Cash ISA — без оподаткування відсотків. Захист до £85 000 (FSCS).", source: "Bank of England ↗" },
+            { name: "Облігації Великобританії (Gilts)", badge: "Максимум безпеки", comment: "Державні облігації Його Величності. Вікова традиція надійності з епохи Банку Англії.", source: "UK Gilts / DMO ↗" },
+            { name: "Корпоративні облігації UK (SLXX)", badge: "Захисний дохід", comment: "ETF на найкращі корпоративні облігації Великобританії: Shell, HSBC, Unilever.", source: "iShares SLXX ETF ↗" },
+            { name: "Індекс FTSE 100", badge: "Акції UK", comment: "100 найбільших компаній Лондонської біржі: Shell, AstraZeneca, HSBC. Дивідендна надійність.", source: "FTSE 100 Index ↗" },
+            { name: "Індекс FTSE 250", badge: "Ріст Mid-cap", comment: "250 середніх компаній Великобританії. Вищий ризик, вищий потенціал зростання.", source: "FTSE 250 Index ↗" },
+            { name: "Золото (XAU в GBP)", badge: "Абсолютний лідер 👑", comment: "Золото у фунтах стерлінгів на рекордних рівнях. Класичний захист від девальвації.", source: "Gold / GBP ↗" }
+        ],
+        en: [
+            { name: "Cash ISA Savings (UK)", badge: "Baseline Scenario", comment: "British Cash ISA — interest is fully tax-free. Protected up to £85,000 by FSCS.", source: "Bank of England ↗" },
+            { name: "UK Government Bonds (Gilts)", badge: "Maximum Safety", comment: "His Majesty's Government bonds. Centuries-old tradition of reliability from the Bank of England era.", source: "UK Gilts / DMO ↗" },
+            { name: "UK Corporate Bonds (SLXX)", badge: "Defensive Yield", comment: "ETF of top UK corporate bonds: Shell, HSBC, Unilever. Steady income.", source: "iShares SLXX ETF ↗" },
+            { name: "FTSE 100 Index", badge: "UK Stocks", comment: "100 biggest companies on the London Stock Exchange: Shell, AstraZeneca, HSBC. Dividend champions.", source: "FTSE 100 Index ↗" },
+            { name: "FTSE 250 Index", badge: "Mid-cap Growth", comment: "250 mid-size UK companies. Higher risk, higher growth potential.", source: "FTSE 250 Index ↗" },
+            { name: "Gold (XAU in GBP)", badge: "Absolute Leader 👑", comment: "Gold in GBP at record levels. A classic hedge against pound devaluation.", source: "Gold / GBP ↗" }
+        ],
+        es: [
+            { name: "Cuenta de Ahorro ISA (UK)", badge: "Escenario Base", comment: "Cash ISA británico — intereses libres de impuestos. Protegido hasta £85.000 por la FSCS.", source: "Bank of England ↗" },
+            { name: "Bonos del Gobierno UK (Gilts)", badge: "Máxima Seguridad", comment: "Bonos del gobierno de Su Majestad. Tradición centenaria de confiabilidad desde la era del Banco de Inglaterra.", source: "UK Gilts / DMO ↗" },
+            { name: "Bonos Corporativos UK (SLXX)", badge: "Rendimiento Defensivo", comment: "ETF de los mejores bonos corporativos del Reino Unido: Shell, HSBC, Unilever.", source: "iShares SLXX ETF ↗" },
+            { name: "Índice FTSE 100", badge: "Acciones UK", comment: "Las 100 mayores empresas de la Bolsa de Londres: Shell, AstraZeneca, HSBC. Campeones de dividendos.", source: "Índice FTSE 100 ↗" },
+            { name: "Índice FTSE 250", badge: "Crecimiento Mid-cap", comment: "250 empresas medianas del Reino Unido. Mayor riesgo, mayor potencial de crecimiento.", source: "Índice FTSE 250 ↗" },
+            { name: "Oro (XAU en GBP)", badge: "Líder Absoluto 👑", comment: "El oro en GBP en niveles récord. Cobertura clásica contra la devaluación de la libra.", source: "Oro / GBP ↗" }
+        ]
+    }
+};
+
+// Active currency state
+let currentCurrency = 'UAH';
+
 // Current active rates (hydrated initially with defaults)
 let currentRates = {
     usd: NBU_START_USD_DEFAULT,
+    eur: NBU_START_EUR_DEFAULT,
+    gbp: NBU_START_GBP_DEFAULT,
     xau: NBU_START_XAU_DEFAULT,
     sp500: SP500_START_DEFAULT
 };
@@ -338,6 +503,7 @@ let isLoading = false;
 // Target elements - declared globally, initialized in DOMContentLoaded
 let debtInput;
 let nameInput;
+let debtCurrencySelect;
 let issueDateInput;
 let elapsedTimeText;
 let maxRegretText;
@@ -390,6 +556,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize DOM elements
     debtInput = document.getElementById('debt-amount');
     nameInput = document.getElementById('friend-name');
+    debtCurrencySelect = document.getElementById('debt-currency');
     issueDateInput = document.getElementById('issue-date');
     elapsedTimeText = document.getElementById('elapsed-time-text');
     maxRegretText = document.getElementById('max-regret-amount');
@@ -428,14 +595,27 @@ document.addEventListener('DOMContentLoaded', () => {
     // 1. Read parameters from URL search query
     const urlParams = new URLSearchParams(window.location.search);
     
-    // Parse & validate amount
+    // Parse & validate currency (must be one of the known currencies)
+    const urlCurrency = urlParams.get('currency');
+    if (urlCurrency && CURRENCY_CONFIG[urlCurrency]) {
+        currentCurrency = urlCurrency;
+    } else {
+        currentCurrency = 'UAH';
+    }
+    debtCurrencySelect.value = currentCurrency;
+    
+    // Update presets for the initial currency
+    updatePresetsForCurrency(currentCurrency);
+    
+    // Parse & validate amount (if absent, use currency default)
     const urlAmount = parseFloat(urlParams.get('amount'));
+    const cfg = CURRENCY_CONFIG[currentCurrency];
     if (!isNaN(urlAmount) && urlAmount > 0) {
         currentDebt = urlAmount;
         debtInput.value = urlAmount;
     } else {
-        currentDebt = 50000;
-        debtInput.value = 50000;
+        currentDebt = cfg.defaultDebt;
+        debtInput.value = cfg.defaultDebt;
     }
     
     // Parse & validate date (must be a valid date before TODAY)
@@ -513,6 +693,11 @@ document.addEventListener('DOMContentLoaded', () => {
         syncParamsToUrl();
     });
     
+    // Currency selector change event
+    debtCurrencySelect.addEventListener('change', (e) => {
+        switchCurrency(e.target.value);
+    });
+    
     // Explicit trigger for Chrome calendar picker on clicking anywhere inside the input box
     issueDateInput.addEventListener('click', () => {
         if (typeof issueDateInput.showPicker === 'function') {
@@ -584,6 +769,7 @@ function syncParamsToUrl() {
     url.searchParams.set('amount', currentDebt);
     url.searchParams.set('date', issueDateInput.value);
     url.searchParams.set('lang', currentLang);
+    url.searchParams.set('currency', currentCurrency);
     
     const nameVal = nameInput.value.trim();
     if (nameVal) {
@@ -593,6 +779,67 @@ function syncParamsToUrl() {
     }
     
     window.history.replaceState({}, '', url.toString());
+}
+
+/**
+ * Switches the active currency, updates presets, default debt, card text, and recalculates.
+ * Called when the user changes the currency dropdown.
+ */
+function switchCurrency(currency) {
+    if (!CURRENCY_CONFIG[currency]) return;
+    currentCurrency = currency;
+    
+    // Update presets (labels and data-value attributes)
+    updatePresetsForCurrency(currency);
+    
+    // Set default debt for this currency
+    const cfg = CURRENCY_CONFIG[currency];
+    currentDebt = cfg.defaultDebt;
+    debtInput.value = cfg.defaultDebt;
+    
+    // Activate the default preset
+    presetButtons.forEach(btn => btn.classList.remove('active'));
+    if (presetButtons[cfg.defaultPresetIndex]) {
+        presetButtons[cfg.defaultPresetIndex].classList.add('active');
+    }
+    
+    // Update amount label with correct currency name
+    const amountLabelEl = document.querySelector('[data-i18n="amount-label"]');
+    if (amountLabelEl) {
+        amountLabelEl.textContent = getAmountLabel();
+    }
+    
+    // Translate card text for the new currency
+    applyLanguage(currentLang);
+    
+    // Sync to URL and recalculate
+    syncParamsToUrl();
+    calculateAndUpdate();
+}
+
+/**
+ * Updates preset buttons' data-value and inner text to match the selected currency's scale.
+ */
+function updatePresetsForCurrency(currency) {
+    const cfg = CURRENCY_CONFIG[currency];
+    presetButtons.forEach((btn, idx) => {
+        btn.dataset.value = cfg.presets[idx];
+        btn.textContent = cfg.presetLabels[idx];
+    });
+}
+
+/**
+ * Returns the localized amount label combining language and currency.
+ */
+function getAmountLabel() {
+    const sym = CURRENCY_CONFIG[currentCurrency].symbol;
+    const code = currentCurrency;
+    if (currentLang === 'uk') {
+        return `Сума боргу, ${code} (${sym})`;
+    } else if (currentLang === 'es') {
+        return `Monto de la Deuda, ${code} (${sym})`;
+    }
+    return `Debt Amount, ${code} (${sym})`;
 }
 
 /**
@@ -710,6 +957,9 @@ function applyLanguage(lang) {
             el.innerHTML = dict.titleGreeting;
         } else if (key === 'modal-instruction-text') {
             el.innerHTML = dict.modalInstructionText;
+        } else if (key === 'amount-label') {
+            // Override with currency-aware label
+            el.textContent = getAmountLabel();
         } else if (dict[camelKey]) {
             el.textContent = dict[camelKey];
         }
@@ -731,7 +981,8 @@ function applyLanguage(lang) {
     }
     
     // 3. Update active investment cards text (Card Title, Card Badge, Card Comment, API link)
-    const cardsData = INVESTMENTS_DATA_I18N[lang];
+    const currencyData = INVESTMENTS_DATA_BY_CURRENCY[currentCurrency];
+    const cardsData = currencyData ? currencyData[lang] : INVESTMENTS_DATA_BY_CURRENCY['UAH'][lang];
     investCards.forEach((card, idx) => {
         const data = cardsData[idx];
         if (!data) return;
@@ -867,6 +1118,8 @@ async function calculateAndUpdate() {
     if (isDefaultDate) {
         rates = {
             usd: NBU_START_USD_DEFAULT,
+            eur: NBU_START_EUR_DEFAULT,
+            gbp: NBU_START_GBP_DEFAULT,
             xau: NBU_START_XAU_DEFAULT,
             sp500: SP500_START_DEFAULT
         };
@@ -895,6 +1148,8 @@ async function calculateAndUpdate() {
             const fetched = await fetchNbuRates(selectedDate);
             rates = {
                 usd: fetched.usd,
+                eur: fetched.eur,
+                gbp: fetched.gbp,
                 xau: fetched.xau,
                 sp500: getInterpolatedSP500(selectedDate)
             };
@@ -937,50 +1192,73 @@ async function calculateAndUpdate() {
         }
     }
     
-    // Calculate investments returns
+    // =======================================================================
+    // Calculate investments returns based on active currency
+    // =======================================================================
     const T = diffDays / 365; // Duration in years
     let maxProfit = 0;
     let cardProfits = [];
     let cardTotals = [];
     
-    // Calculate dynamic annualized APY for rate badges for the selected period
-    let usdCashApy = useFallbackCalculations ? (INVESTMENTS_DATA[2].apy * 100) : (((NBU_END_USD / rates.usd - 1) / T) * 100);
-    let usdtApy = useFallbackCalculations ? (INVESTMENTS_DATA[3].apy * 100) : ((((NBU_END_USD / rates.usd) * (1 + 0.06 * T) - 1) / T) * 100);
-    let sp500Apy = useFallbackCalculations ? (INVESTMENTS_DATA[4].apy * 100) : ((((SP500_END / rates.sp500) * (NBU_END_USD / rates.usd) - 1) / T) * 100);
-    let goldApy = useFallbackCalculations ? (INVESTMENTS_DATA[5].apy * 100) : (((NBU_END_XAU / rates.xau - 1) / T) * 100);
+    const currencyInstruments = INVESTMENTS_DATA_BY_CURRENCY[currentCurrency];
+    const fallbackApys = currencyInstruments.fallbackApys;
     
-    INVESTMENTS_DATA.forEach((data, index) => {
+    for (let index = 0; index < 6; index++) {
         let profit = 0;
         let apyValue = 0;
         
-        if (useFallbackCalculations) {
-            profit = currentDebt * data.apy * T;
-            apyValue = data.apy * 100;
+        if (useFallbackCalculations || currentCurrency !== 'UAH') {
+            // For non-UAH currencies: all instruments use simple APY compound
+            // except Gold (index 5) which uses cross-rate from NBU when available
+            if (currentCurrency !== 'UAH' && index === 5 && !useFallbackCalculations) {
+                // Gold in foreign currency via cross-rate: XAU_UAH / FOREX_UAH
+                const forexKeyEnd = currentCurrency === 'USD' ? NBU_END_USD : (currentCurrency === 'EUR' ? NBU_END_EUR : NBU_END_GBP);
+                const forexKeyStart = currentCurrency === 'USD' ? rates.usd : (currentCurrency === 'EUR' ? rates.eur : rates.gbp);
+                const goldEndForeign = NBU_END_XAU / forexKeyEnd;
+                const goldStartForeign = rates.xau / forexKeyStart;
+                profit = currentDebt * (goldEndForeign / goldStartForeign - 1);
+                apyValue = ((goldEndForeign / goldStartForeign - 1) / T) * 100;
+            } else if (currentCurrency !== 'UAH' && (index === 3 || index === 4) && !useFallbackCalculations) {
+                // For USD: index 3 = S&P 500 (VOO), index 4 = NASDAQ-100 (QQQ)
+                // S&P 500 in USD uses direct index growth
+                if (currentCurrency === 'USD' && index === 3) {
+                    profit = currentDebt * (SP500_END / rates.sp500 - 1);
+                    apyValue = ((SP500_END / rates.sp500 - 1) / T) * 100;
+                } else {
+                    // Use fallback APY for indexes in EUR/GBP or NASDAQ
+                    profit = currentDebt * fallbackApys[index] * T;
+                    apyValue = fallbackApys[index] * 100;
+                }
+            } else {
+                profit = currentDebt * fallbackApys[index] * T;
+                apyValue = fallbackApys[index] * 100;
+            }
         } else {
+            // UAH mode: dynamic calculations using live NBU data
             switch (index) {
                 case 0: // Deposit
-                    profit = currentDebt * data.apy * T;
-                    apyValue = data.apy * 100;
+                    profit = currentDebt * fallbackApys[0] * T;
+                    apyValue = fallbackApys[0] * 100;
                     break;
                 case 1: // OVDP
-                    profit = currentDebt * data.apy * T;
-                    apyValue = data.apy * 100;
+                    profit = currentDebt * fallbackApys[1] * T;
+                    apyValue = fallbackApys[1] * 100;
                     break;
                 case 2: // USD Cash
                     profit = currentDebt * (NBU_END_USD / rates.usd - 1);
-                    apyValue = usdCashApy;
+                    apyValue = ((NBU_END_USD / rates.usd - 1) / T) * 100;
                     break;
                 case 3: // USDT Staking
                     profit = currentDebt * ((NBU_END_USD / rates.usd) * (1 + 0.06 * T) - 1);
-                    apyValue = usdtApy;
+                    apyValue = (((NBU_END_USD / rates.usd) * (1 + 0.06 * T) - 1) / T) * 100;
                     break;
                 case 4: // S&P 500
                     profit = currentDebt * ((SP500_END / rates.sp500) * (NBU_END_USD / rates.usd) - 1);
-                    apyValue = sp500Apy;
+                    apyValue = (((SP500_END / rates.sp500) * (NBU_END_USD / rates.usd) - 1) / T) * 100;
                     break;
                 case 5: // Gold
                     profit = currentDebt * (NBU_END_XAU / rates.xau - 1);
-                    apyValue = goldApy;
+                    apyValue = ((NBU_END_XAU / rates.xau - 1) / T) * 100;
                     break;
             }
         }
@@ -1004,75 +1282,12 @@ async function calculateAndUpdate() {
             animatedStates.cards[index] = Math.round(profit);
         }
         
-        // Update APY badge content dynamically based on current selected dates and language
+        // Update APY badge content dynamically
         const rateBadge = document.querySelector(`[data-index="${index}"] .rate-badge`);
         if (rateBadge) {
-            if (currentLang === 'uk') {
-                switch (index) {
-                    case 0:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">нетто</span>`;
-                        break;
-                    case 1:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">0% податків</span>`;
-                        break;
-                    case 2:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">ріст курсу</span>`;
-                        break;
-                    case 3:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">курс + 6% stake</span>`;
-                        break;
-                    case 4:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">фонд (VOO)</span>`;
-                        break;
-                    case 5:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">шалене ралі</span>`;
-                        break;
-                }
-            } else if (currentLang === 'es') {
-                switch (index) {
-                    case 0:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">neto</span>`;
-                        break;
-                    case 1:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">sin impuestos</span>`;
-                        break;
-                    case 2:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">crecimiento del cambio</span>`;
-                        break;
-                    case 3:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">cambio + 6% stake</span>`;
-                        break;
-                    case 4:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">fondo (VOO)</span>`;
-                        break;
-                    case 5:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">rally loco</span>`;
-                        break;
-                }
-            } else {
-                switch (index) {
-                    case 0:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">net</span>`;
-                        break;
-                    case 1:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">0% tax</span>`;
-                        break;
-                    case 2:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">currency growth</span>`;
-                        break;
-                    case 3:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">rate + 6% stake</span>`;
-                        break;
-                    case 4:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">index fund (VOO)</span>`;
-                        break;
-                    case 5:
-                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">crazy rally</span>`;
-                        break;
-                }
-            }
+            rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY`;
         }
-    });
+    }
     
     maxProfit = Math.round(maxProfit);
     
@@ -1139,7 +1354,7 @@ async function calculateAndUpdate() {
    Helper Functions
    ========================================================================== */
 /**
- * Fetches USD exchange rate and Gold accounting price from NBU API for a specific date.
+ * Fetches USD, EUR, GBP exchange rates and Gold accounting price from NBU API for a specific date.
  * Implements a retry loop up to 3 days back for robustness.
  */
 async function fetchNbuRates(dateObj) {
@@ -1151,32 +1366,40 @@ async function fetchNbuRates(dateObj) {
                          String(tempDate.getMonth() + 1).padStart(2, '0') + 
                          String(tempDate.getDate()).padStart(2, '0');
         
-        const usdUrl = `https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=USD&date=${yyyymmdd}&json`;
-        const xauUrl = `https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?valcode=XAU&date=${yyyymmdd}&json`;
+        const baseUrl = `https://bank.gov.ua/NBUStatService/v1/statdirectory/exchange?date=${yyyymmdd}&json&valcode=`;
         
         try {
             console.log(`Fetching rates for date: ${yyyymmdd} (attempt ${attempts + 1})...`);
-            const [usdResponse, xauResponse] = await Promise.all([
-                fetch(usdUrl),
-                fetch(xauUrl)
+            const [usdResponse, eurResponse, gbpResponse, xauResponse] = await Promise.all([
+                fetch(baseUrl + 'USD'),
+                fetch(baseUrl + 'EUR'),
+                fetch(baseUrl + 'GBP'),
+                fetch(baseUrl + 'XAU')
             ]);
             
-            if (!usdResponse.ok || !xauResponse.ok) {
-                throw new Error(`HTTP error! USD: ${usdResponse.status}, XAU: ${xauResponse.status}`);
+            if (!usdResponse.ok || !eurResponse.ok || !gbpResponse.ok || !xauResponse.ok) {
+                throw new Error(`HTTP error! USD: ${usdResponse.status}, EUR: ${eurResponse.status}, GBP: ${gbpResponse.status}, XAU: ${xauResponse.status}`);
             }
             
-            const [usdData, xauData] = await Promise.all([
+            const [usdData, eurData, gbpData, xauData] = await Promise.all([
                 usdResponse.json(),
+                eurResponse.json(),
+                gbpResponse.json(),
                 xauResponse.json()
             ]);
             
-            if (Array.isArray(usdData) && usdData.length > 0 && Array.isArray(xauData) && xauData.length > 0) {
+            if (Array.isArray(usdData) && usdData.length > 0 &&
+                Array.isArray(eurData) && eurData.length > 0 &&
+                Array.isArray(gbpData) && gbpData.length > 0 &&
+                Array.isArray(xauData) && xauData.length > 0) {
                 const usdRate = usdData[0].rate;
+                const eurRate = eurData[0].rate;
+                const gbpRate = gbpData[0].rate;
                 const xauRate = xauData[0].rate;
                 
-                if (usdRate && xauRate) {
-                    console.log(`Successfully fetched USD: ${usdRate}, XAU: ${xauRate}`);
-                    return { usd: usdRate, xau: xauRate };
+                if (usdRate && eurRate && gbpRate && xauRate) {
+                    console.log(`Successfully fetched USD: ${usdRate}, EUR: ${eurRate}, GBP: ${gbpRate}, XAU: ${xauRate}`);
+                    return { usd: usdRate, eur: eurRate, gbp: gbpRate, xau: xauRate };
                 }
             }
         } catch (e) {
@@ -1264,7 +1487,7 @@ function animateNumber(element, start, end, duration = 600, isCurrency = true, p
         if (isCurrency) {
             element.textContent = prefix + formatCurrency(currentValue);
         } else {
-            element.textContent = prefix + currentValue.toLocaleString('uk-UA');
+            element.textContent = prefix + currentValue.toLocaleString(currentLang === 'uk' ? 'uk-UA' : 'en-US');
         }
         
         if (progress < 1) {
@@ -1273,7 +1496,7 @@ function animateNumber(element, start, end, duration = 600, isCurrency = true, p
             if (isCurrency) {
                 element.textContent = prefix + formatCurrency(end);
             } else {
-                element.textContent = prefix + end.toLocaleString('uk-UA');
+                element.textContent = prefix + end.toLocaleString(currentLang === 'uk' ? 'uk-UA' : 'en-US');
             }
         }
     }
@@ -1282,11 +1505,13 @@ function animateNumber(element, start, end, duration = 600, isCurrency = true, p
 }
 
 function formatCurrency(value) {
-    if (currentLang === 'uk') {
-        return value.toLocaleString('uk-UA') + ' ₴';
-    } else {
-        return value.toLocaleString('en-US') + ' ₴';
+    const cfg = CURRENCY_CONFIG[currentCurrency];
+    const localeStr = currentLang === 'uk' ? 'uk-UA' : (currentLang === 'es' ? 'es-ES' : 'en-US');
+    const formatted = Math.round(value).toLocaleString(localeStr);
+    if (cfg.position === 'prefix') {
+        return cfg.symbol + formatted;
     }
+    return formatted + ' ' + cfg.symbol;
 }
 
 /**
@@ -1367,7 +1592,8 @@ function handleShareHint() {
  * Opens the interactive chart modal for a specific investment index
  */
 function openChartModal(index) {
-    const cardData = INVESTMENTS_DATA_I18N[currentLang][index];
+    const currencyData = INVESTMENTS_DATA_BY_CURRENCY[currentCurrency];
+    const cardData = currencyData ? currencyData[currentLang][index] : null;
     if (!cardData) return;
     
     // Determine dynamic chart theme color and icon based on card type
@@ -1436,7 +1662,8 @@ function closeChartModal() {
 }
 
 /**
- * Generates exactly 10 evenly spaced chronological coordinates for the active asset type
+ * Generates exactly 10 evenly spaced chronological coordinates for the active asset type.
+ * Supports all currencies (UAH dynamic, USD/EUR/GBP via APY or cross-rate).
  */
 function generateChartPoints(index) {
     const points = [];
@@ -1446,34 +1673,50 @@ function generateChartPoints(index) {
     // Calculate step interval in milliseconds
     const stepDiff = Math.max(1, totalTimeDiff / 9);
     
+    const fallbackApys = INVESTMENTS_DATA_BY_CURRENCY[currentCurrency].fallbackApys;
+    
     for (let i = 0; i < 10; i++) {
         const stepTime = new Date(selectedDate.getTime() + i * stepDiff);
         const yearsElapsed = (stepTime - selectedDate) / (365.25 * 24 * 60 * 60 * 1000);
         
         let value = currentDebt;
         
-        const apys = [0.1078, 0.1600, 0.0, 0.06, 0.0, 0.0];
-        
-        if (index === 0 || index === 1) {
-            // Compound monthly APY net of taxes
-            value = currentDebt * Math.pow(1 + apys[index], yearsElapsed);
-        } else if (index === 2) {
-            // Cash USD (interpolate USD exchange rate growth)
-            const usdRate = currentRates.usd + ((NBU_END_USD - currentRates.usd) / 9) * i;
-            value = currentDebt * (usdRate / currentRates.usd);
-        } else if (index === 3) {
-            // USDT Staking / Foreign Deposit (interpolate rate + 6% USD APY compound)
-            const usdRate = currentRates.usd + ((NBU_END_USD - currentRates.usd) / 9) * i;
-            value = currentDebt * Math.pow(1 + 0.06, yearsElapsed) * (usdRate / currentRates.usd);
-        } else if (index === 4) {
-            // S&P 500 Index (interpolate index + interpolate USD rate conversion)
-            const spValue = getInterpolatedSP500(stepTime);
-            const usdRate = currentRates.usd + ((NBU_END_USD - currentRates.usd) / 9) * i;
-            value = currentDebt * (spValue / currentRates.sp500) * (usdRate / currentRates.usd);
-        } else if (index === 5) {
-            // Gold (interpolate commodity rate growth)
-            const goldRate = currentRates.xau + ((NBU_END_XAU - currentRates.xau) / 9) * i;
-            value = currentDebt * (goldRate / currentRates.xau);
+        if (currentCurrency === 'UAH') {
+            // UAH-specific dynamic calculations
+            if (index === 0 || index === 1) {
+                value = currentDebt * Math.pow(1 + fallbackApys[index], yearsElapsed);
+            } else if (index === 2) {
+                const usdRate = currentRates.usd + ((NBU_END_USD - currentRates.usd) / 9) * i;
+                value = currentDebt * (usdRate / currentRates.usd);
+            } else if (index === 3) {
+                const usdRate = currentRates.usd + ((NBU_END_USD - currentRates.usd) / 9) * i;
+                value = currentDebt * Math.pow(1 + 0.06, yearsElapsed) * (usdRate / currentRates.usd);
+            } else if (index === 4) {
+                const spValue = getInterpolatedSP500(stepTime);
+                const usdRate = currentRates.usd + ((NBU_END_USD - currentRates.usd) / 9) * i;
+                value = currentDebt * (spValue / currentRates.sp500) * (usdRate / currentRates.usd);
+            } else if (index === 5) {
+                const goldRate = currentRates.xau + ((NBU_END_XAU - currentRates.xau) / 9) * i;
+                value = currentDebt * (goldRate / currentRates.xau);
+            }
+        } else {
+            // Non-UAH currencies
+            if (index === 5) {
+                // Gold via cross-rate interpolation
+                const forexEnd = currentCurrency === 'USD' ? NBU_END_USD : (currentCurrency === 'EUR' ? NBU_END_EUR : NBU_END_GBP);
+                const forexStart = currentCurrency === 'USD' ? currentRates.usd : (currentCurrency === 'EUR' ? currentRates.eur : currentRates.gbp);
+                const goldStartForeign = currentRates.xau / forexStart;
+                const goldEndForeign = NBU_END_XAU / forexEnd;
+                const goldStep = goldStartForeign + ((goldEndForeign - goldStartForeign) / 9) * i;
+                value = currentDebt * (goldStep / goldStartForeign);
+            } else if (currentCurrency === 'USD' && index === 3) {
+                // S&P 500 direct index growth for USD
+                const spValue = getInterpolatedSP500(stepTime);
+                value = currentDebt * (spValue / currentRates.sp500);
+            } else {
+                // Simple compound APY growth for savings, bonds, indexes
+                value = currentDebt * Math.pow(1 + fallbackApys[index], yearsElapsed);
+            }
         }
         
         points.push({
@@ -1563,16 +1806,19 @@ function renderChartSVG(points, themeColor) {
 }
 
 /**
- * Localized short currency abbreviation labels (e.g. 1.2M, 50k, 250)
+ * Localized short currency abbreviation labels (e.g. $1.2M, €50k, 250₴)
  */
 function formatCurrencyLabel(value) {
+    const cfg = CURRENCY_CONFIG[currentCurrency];
+    let label;
     if (value >= 1000000) {
-        return (value / 1000000).toFixed(1).replace('.0', '') + 'M';
+        label = (value / 1000000).toFixed(1).replace('.0', '') + 'M';
+    } else if (value >= 1000) {
+        label = (value / 1000).toFixed(0) + 'k';
+    } else {
+        label = String(Math.round(value));
     }
-    if (value >= 1000) {
-        return (value / 1000).toFixed(0) + 'k';
-    }
-    return Math.round(value);
+    return cfg.position === 'prefix' ? cfg.symbol + label : label + cfg.symbol;
 }
 
 /**

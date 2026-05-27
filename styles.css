@@ -323,7 +323,7 @@ body {
 
 .number-input-wrapper input {
     width: 100%;
-    padding: 16px 70px 16px 20px;
+    padding: 16px 110px 16px 20px;
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
@@ -350,17 +350,54 @@ body {
     -moz-appearance: textfield;
 }
 
-.currency-badge {
+.currency-select-container {
     position: absolute;
-    right: 20px;
-    font-size: 0.85rem;
-    font-weight: 700;
-    color: var(--color-text-muted);
-    letter-spacing: 0.05em;
+    right: 12px;
+    display: flex;
+    align-items: center;
+}
+
+.currency-select {
     background: rgba(255, 255, 255, 0.05);
-    padding: 4px 8px;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    font-family: var(--font-sans);
+    font-size: 0.8rem;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    padding: 6px 10px;
     border-radius: var(--radius-sm);
-    pointer-events: none;
+    cursor: pointer;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    outline: none;
+    transition: var(--transition-smooth);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    appearance: none; /* Hide default native arrow */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='12' height='12' fill='none' stroke='rgba(255,255,255,0.4)' stroke-width='2' viewBox='0 0 24 24'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+    padding-right: 28px; /* Extra padding for custom arrow */
+}
+
+.currency-select:hover {
+    border-color: var(--color-border-hover);
+    color: var(--color-text-primary);
+}
+
+.currency-select:focus {
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+    box-shadow: 0 0 10px rgba(0, 229, 255, 0.3);
+}
+
+.currency-select option {
+    background: #0f121d;
+    color: var(--color-text-primary);
+    font-family: var(--font-sans);
+    padding: 8px;
 }
 
 /* Presets (Quick Select Buttons) */
