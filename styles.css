@@ -707,12 +707,18 @@ body {
     display: flex;
     flex-direction: column;
     gap: 20px;
+    cursor: pointer;
 }
 
 .invest-card:hover {
     transform: translateY(-6px);
-    border-color: var(--color-border-hover);
-    box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.6);
+    border-color: rgba(0, 229, 255, 0.3);
+    box-shadow: 0 15px 35px -5px rgba(0, 229, 255, 0.08), 0 15px 35px -5px rgba(0, 0, 0, 0.6);
+}
+
+.invest-card.gold-card:hover {
+    border-color: rgba(255, 215, 0, 0.4);
+    box-shadow: 0 15px 35px -5px rgba(255, 215, 0, 0.08), 0 15px 35px -5px rgba(0, 0, 0, 0.6);
 }
 
 .card-glow {
@@ -1100,3 +1106,327 @@ body {
         font-size: 3.2rem;
     }
 }
+
+/* ==========================================================================
+   Investment Opportunity Growth Chart Modal & SVG CSS
+   ========================================================================== */
+.card-chart-hint {
+    font-size: 0.72rem;
+    color: var(--color-text-muted);
+    opacity: 0.3;
+    transition: var(--transition-smooth);
+    margin-top: 4px;
+    text-align: center;
+    font-weight: 500;
+}
+
+.invest-card:hover .card-chart-hint {
+    opacity: 0.9;
+    color: var(--color-cyan);
+    text-shadow: 0 0 8px rgba(0, 229, 255, 0.4);
+}
+
+.invest-card.gold-card:hover .card-chart-hint {
+    color: var(--color-gold);
+    text-shadow: 0 0 8px rgba(255, 215, 0, 0.4);
+}
+
+/* Modal Overlay backdrop */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(4, 5, 8, 0.75);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    z-index: 1000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.3s cubic-bezier(0.25, 0.8, 0.25, 1), visibility 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.modal-overlay.hidden {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+/* Modal Content Container */
+.modal-container {
+    width: 100%;
+    max-width: 680px;
+    background: var(--color-card-bg);
+    border: 1px solid var(--color-border);
+    box-shadow: 0 30px 60px -10px rgba(0, 0, 0, 0.8), 0 0 40px rgba(124, 77, 255, 0.05);
+    border-radius: var(--radius-lg);
+    padding: 30px;
+    position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.animate-slide-up {
+    animation: modalSlideUp 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+@keyframes modalSlideUp {
+    from {
+        transform: translateY(30px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Modal Header styling */
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 16px;
+}
+
+.modal-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.modal-icon-box {
+    font-size: 1.6rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-title {
+    font-size: 1.4rem;
+    font-weight: 750;
+    color: var(--color-text-primary);
+    letter-spacing: -0.01em;
+}
+
+.modal-close-btn {
+    background: transparent;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-muted);
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-smooth);
+}
+
+.modal-close-btn:hover {
+    color: var(--color-text-primary);
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--color-border-hover);
+    transform: rotate(90deg);
+}
+
+/* Modal Body */
+.modal-summary-box {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+    padding: 16px 20px;
+    border-radius: var(--radius-md);
+    margin-bottom: 16px;
+    text-align: center;
+}
+
+.summary-metric {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.summary-metric .label {
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+.summary-metric .value {
+    font-size: 1.25rem;
+    font-weight: 750;
+    color: var(--color-text-primary);
+}
+
+.summary-metric .value.profit {
+    color: var(--color-emerald);
+    text-shadow: 0 0 10px rgba(0, 230, 118, 0.15);
+}
+
+.modal-instruction {
+    font-size: 0.82rem;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+    margin-bottom: 24px;
+    padding: 8px 12px;
+    border-left: 3px solid var(--chart-theme-color, var(--color-cyan));
+    background: rgba(0, 229, 255, 0.02);
+}
+
+/* Chart Canvas Wrapper */
+.chart-wrapper {
+    position: relative;
+    background: var(--color-card-inset);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: 16px 20px 24px 20px;
+    overflow: visible;
+    margin-bottom: 12px;
+    touch-action: none;
+}
+
+#growth-chart {
+    display: block;
+    overflow: visible;
+    z-index: 10;
+}
+
+/* Grid & chart paths */
+.grid-line {
+    stroke: rgba(255, 255, 255, 0.04);
+    stroke-width: 1;
+}
+
+.grid-label-y {
+    fill: rgba(255, 255, 255, 0.3);
+    font-size: 9px;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    text-anchor: end;
+}
+
+.chart-area {
+    transition: d 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.chart-line {
+    transition: d 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+/* Hover indicators inside SVG */
+.hover-line {
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+.hover-point {
+    pointer-events: none;
+    transition: opacity 0.15s ease, transform 0.1s ease;
+    filter: drop-shadow(0 0 6px var(--chart-theme-color, var(--color-cyan)));
+}
+
+.hover-line.hidden, .hover-point.hidden {
+    opacity: 0;
+}
+
+/* Chart Tooltip Overlay */
+.chart-tooltip {
+    position: absolute;
+    pointer-events: none;
+    z-index: 20;
+    background: rgba(18, 20, 28, 0.85);
+    border: 1px solid rgba(0, 229, 255, 0.3);
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.6), 0 0 15px rgba(0, 229, 255, 0.2);
+    border-radius: var(--radius-sm);
+    padding: 8px 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    font-size: 0.75rem;
+    transition: opacity 0.15s ease;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transform: translate(-50%, -100%);
+    margin-top: -12px;
+    min-width: 120px;
+    text-align: center;
+}
+
+.chart-tooltip.hidden {
+    opacity: 0;
+}
+
+.tooltip-date {
+    color: var(--color-text-muted);
+    font-weight: 500;
+    font-size: 0.7rem;
+    text-transform: capitalize;
+}
+
+.tooltip-value {
+    color: var(--color-text-primary);
+    font-weight: 800;
+    font-size: 0.88rem;
+}
+
+/* Axis Labels */
+.chart-axis-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 4px;
+    font-size: 0.78rem;
+    color: var(--color-text-muted);
+    font-weight: 500;
+}
+
+/* Tablet / Mobile adaptations for chart modal */
+@media (max-width: 768px) {
+    .modal-container {
+        padding: 20px;
+    }
+    
+    .modal-title {
+        font-size: 1.25rem;
+    }
+    
+    .modal-summary-box {
+        grid-template-columns: 1fr;
+        gap: 8px;
+        padding: 12px;
+    }
+    
+    .summary-metric {
+        flex-direction: row;
+        justify-content: space-between;
+        align-items: center;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+        padding-bottom: 6px;
+    }
+    
+    .summary-metric:last-child {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+    
+    .summary-metric .value {
+        font-size: 1.1rem;
+    }
+    
+    .chart-wrapper {
+        padding: 10px 10px 20px 10px;
+    }
+    
+    #growth-chart {
+        height: 180px;
+    }
+}
+

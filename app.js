@@ -119,6 +119,28 @@ let statusIndicator;
 let statusTitle;
 let investCards;
 
+// Chart Modal DOM elements
+let chartModal;
+let modalCloseBtn;
+let modalTitleText;
+let modalIcon;
+let modalStartAmount;
+let modalProfitAmount;
+let modalEndAmount;
+let chartWrapper;
+let growthChart;
+let gridLinesGroup;
+let chartAreaPath;
+let chartLinePath;
+let hoverLine;
+let hoverPoint;
+let chartTooltip;
+let chartLabelStart;
+let chartLabelEnd;
+
+// Array of generated points of current open chart
+let activeChartPoints = [];
+
 // Map to keep track of current shown totals to animate from them smoothly
 const animatedStates = {
     maxRegret: 0,
@@ -147,6 +169,25 @@ document.addEventListener('DOMContentLoaded', () => {
     statusIndicator = document.getElementById('status-indicator');
     statusTitle = document.getElementById('status-title');
     investCards = document.querySelectorAll('.invest-card');
+
+    // Initialize Chart Modal elements
+    chartModal = document.getElementById('chart-modal');
+    modalCloseBtn = document.getElementById('modal-close-btn');
+    modalTitleText = document.getElementById('modal-title-text');
+    modalIcon = document.getElementById('modal-icon');
+    modalStartAmount = document.getElementById('modal-start-amount');
+    modalProfitAmount = document.getElementById('modal-profit-amount');
+    modalEndAmount = document.getElementById('modal-end-amount');
+    chartWrapper = document.getElementById('chart-wrapper');
+    growthChart = document.getElementById('growth-chart');
+    gridLinesGroup = document.getElementById('grid-lines');
+    chartAreaPath = document.getElementById('chart-area');
+    chartLinePath = document.getElementById('chart-line');
+    hoverLine = document.getElementById('hover-line');
+    hoverPoint = document.getElementById('hover-point');
+    chartTooltip = document.getElementById('chart-tooltip');
+    chartLabelStart = document.getElementById('chart-label-start');
+    chartLabelEnd = document.getElementById('chart-label-end');
 
     // 1. Read parameters from URL search query
     const urlParams = new URLSearchParams(window.location.search);
@@ -225,6 +266,48 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     shareHintBtn.addEventListener('click', handleShareHint);
+    
+    // Attach click events on investment cards to open interactive chart modal
+    investCards.forEach(card => {
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('.card-api-link')) return;
+            const index = parseInt(card.dataset.index);
+            if (!isNaN(index)) {
+                openChartModal(index);
+            }
+        });
+    });
+    
+    // Attach modal closing listeners
+    modalCloseBtn.addEventListener('click', closeChartModal);
+    chartModal.addEventListener('click', (e) => {
+        if (e.target === chartModal) {
+            closeChartModal();
+        }
+    });
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && !chartModal.classList.contains('hidden')) {
+            closeChartModal();
+        }
+    });
+    
+    // Attach chart hover tracking
+    chartWrapper.addEventListener('mousemove', handleChartHover);
+    chartWrapper.addEventListener('touchmove', (e) => {
+        if (e.touches && e.touches[0]) {
+            handleChartHover(e.touches[0]);
+        }
+    });
+    chartWrapper.addEventListener('mouseleave', () => {
+        hoverLine.classList.add('hidden');
+        hoverPoint.classList.add('hidden');
+        chartTooltip.classList.add('hidden');
+    });
+    chartWrapper.addEventListener('touchend', () => {
+        hoverLine.classList.add('hidden');
+        hoverPoint.classList.add('hidden');
+        chartTooltip.classList.add('hidden');
+    });
 });
 
 /* ==========================================================================
@@ -751,4 +834,261 @@ function handleShareHint() {
         console.error('Не вдалося скопіювати текст: ', err);
         alert('Не вдалося скопіювати текст автоматично. Скопіюйте розрахунок вручну:\n\n' + message);
     });
+}
+
+/* ==========================================================================
+   Investment Growth Chart & Modal Logic (What If?)
+   ========================================================================== */
+/**
+ * Opens the interactive chart modal for a specific investment index
+ */
+function openChartModal(index) {
+    const cardData = INVESTMENTS_DATA[index];
+    if (!cardData) return;
+    
+    // Determine dynamic chart theme color and icon based on card type
+    let themeColor = 'var(--color-cyan)';
+    let icon = '📈';
+    if (index === 5) {
+        themeColor = 'var(--color-gold)';
+        icon = '🪙';
+    } else if (index === 0) {
+        themeColor = 'var(--color-primary)';
+        icon = '🏦';
+    } else if (index === 1) {
+        themeColor = '#ffb300';
+        icon = '🛡️';
+    } else if (index === 3) {
+        themeColor = 'var(--color-emerald)';
+        icon = '💵';
+    } else if (index === 4) {
+        themeColor = '#ff5252';
+        icon = '🇺🇸';
+    }
+    
+    chartModal.style.setProperty('--chart-theme-color', themeColor);
+    modalIcon.textContent = icon;
+    modalTitleText.textContent = `Траєкторія росту: ${cardData.name}`;
+    
+    // Extract actual yields from animated states
+    const startDebt = currentDebt;
+    const profit = animatedStates.cards[index];
+    const endSum = startDebt + profit;
+    
+    modalStartAmount.textContent = formatCurrency(startDebt);
+    modalProfitAmount.textContent = `+${formatCurrency(profit)}`;
+    modalEndAmount.textContent = formatCurrency(endSum);
+    
+    // Set chart timeline bounds
+    const selectedDate = new Date(issueDateInput.value);
+    chartLabelStart.textContent = selectedDate.toLocaleDateString('uk-UA', { month: 'long', year: 'numeric' });
+    chartLabelEnd.textContent = TODAY.toLocaleDateString('uk-UA', { month: 'long', year: 'numeric' });
+    
+    // Generate data points
+    activeChartPoints = generateChartPoints(index);
+    
+    // Render SVG
+    renderChartSVG(activeChartPoints, themeColor);
+    
+    // Open Modal
+    chartModal.classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+}
+
+/**
+ * Closes the chart modal and hides interactive elements
+ */
+function closeChartModal() {
+    chartModal.classList.add('hidden');
+    document.body.style.overflow = '';
+    
+    hoverLine.classList.add('hidden');
+    hoverPoint.classList.add('hidden');
+    chartTooltip.classList.add('hidden');
+}
+
+/**
+ * Generates exactly 10 evenly spaced chronological coordinates for the active asset type
+ */
+function generateChartPoints(index) {
+    const points = [];
+    const selectedDate = new Date(issueDateInput.value);
+    const totalTimeDiff = TODAY - selectedDate;
+    
+    // Calculate step interval in milliseconds
+    const stepDiff = Math.max(1, totalTimeDiff / 9);
+    
+    for (let i = 0; i < 10; i++) {
+        const stepTime = new Date(selectedDate.getTime() + i * stepDiff);
+        const yearsElapsed = (stepTime - selectedDate) / (365.25 * 24 * 60 * 60 * 1000);
+        
+        let value = currentDebt;
+        
+        const apys = [0.1078, 0.1600, 0.0, 0.06, 0.0, 0.0];
+        
+        if (index === 0 || index === 1) {
+            // Compound monthly APY net of taxes
+            value = currentDebt * Math.pow(1 + apys[index], yearsElapsed);
+        } else if (index === 2) {
+            // Cash USD (interpolate USD exchange rate growth)
+            const usdRate = currentRates.usd + ((NBU_END_USD - currentRates.usd) / 9) * i;
+            value = currentDebt * (usdRate / currentRates.usd);
+        } else if (index === 3) {
+            // USDT Staking / Foreign Deposit (interpolate rate + 6% USD APY compound)
+            const usdRate = currentRates.usd + ((NBU_END_USD - currentRates.usd) / 9) * i;
+            value = currentDebt * Math.pow(1 + 0.06, yearsElapsed) * (usdRate / currentRates.usd);
+        } else if (index === 4) {
+            // S&P 500 Index (interpolate index + interpolate USD rate conversion)
+            const spValue = getInterpolatedSP500(stepTime);
+            const usdRate = currentRates.usd + ((NBU_END_USD - currentRates.usd) / 9) * i;
+            value = currentDebt * (spValue / currentRates.sp500) * (usdRate / currentRates.usd);
+        } else if (index === 5) {
+            // Gold (interpolate commodity rate growth)
+            const goldRate = currentRates.xau + ((NBU_END_XAU - currentRates.xau) / 9) * i;
+            value = currentDebt * (goldRate / currentRates.xau);
+        }
+        
+        points.push({
+            date: stepTime,
+            value: Math.round(value)
+        });
+    }
+    
+    return points;
+}
+
+/**
+ * Redraws grid lines and line/fill path coordinates inside 600x240 SVG canvas
+ */
+function renderChartSVG(points, themeColor) {
+    const svgWidth = 600;
+    const svgHeight = 240;
+    const paddingLeft = 60;
+    const paddingRight = 20;
+    const paddingTop = 20;
+    const paddingBottom = 30;
+    
+    const chartWidth = svgWidth - paddingLeft - paddingRight;
+    const chartHeight = svgHeight - paddingTop - paddingBottom;
+    
+    let maxVal = Math.max(...points.map(p => p.value));
+    let minVal = Math.min(...points.map(p => p.value));
+    
+    // Inject vertical margins
+    if (maxVal === minVal) {
+        maxVal += currentDebt * 0.1;
+        minVal = Math.max(0, minVal - currentDebt * 0.1);
+    } else {
+        const valDiff = maxVal - minVal;
+        maxVal += valDiff * 0.15;
+        minVal = Math.max(0, minVal - valDiff * 0.05);
+    }
+    
+    // Clear old elements from grid lines group
+    gridLinesGroup.innerHTML = '';
+    
+    // Render 4 horizontal grid lines
+    const gridSteps = 4;
+    for (let k = 0; k <= gridSteps; k++) {
+        const yVal = minVal + ((maxVal - minVal) / gridSteps) * k;
+        const yPos = svgHeight - paddingBottom - (chartHeight / gridSteps) * k;
+        
+        const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+        line.setAttribute('x1', paddingLeft);
+        line.setAttribute('y1', yPos);
+        line.setAttribute('x2', svgWidth - paddingRight);
+        line.setAttribute('y2', yPos);
+        line.setAttribute('class', 'grid-line');
+        gridLinesGroup.appendChild(line);
+        
+        const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
+        text.setAttribute('x', paddingLeft - 10);
+        text.setAttribute('y', yPos + 3);
+        text.setAttribute('class', 'grid-label-y');
+        text.textContent = formatCurrencyLabel(yVal);
+        gridLinesGroup.appendChild(text);
+    }
+    
+    // Map absolute values to coordinate space
+    const coords = points.map((p, idx) => {
+        const x = paddingLeft + (chartWidth / 9) * idx;
+        const y = svgHeight - paddingBottom - ((p.value - minVal) / (maxVal - minVal)) * chartHeight;
+        return { x, y, value: p.value, date: p.date };
+    });
+    
+    // Cache absolute screen coordinates inside point items for click/hover matching
+    points.forEach((p, idx) => {
+        p.cx = coords[idx].x;
+        p.cy = coords[idx].y;
+    });
+    
+    // Set SVG attribute string for glowing line
+    let lineD = `M ${coords[0].x} ${coords[0].y}`;
+    for (let idx = 1; idx < coords.length; idx++) {
+        lineD += ` L ${coords[idx].x} ${coords[idx].y}`;
+    }
+    chartLinePath.setAttribute('d', lineD);
+    
+    // Set SVG attribute string for filled gradient area
+    const areaD = `${lineD} L ${coords[coords.length - 1].x} ${svgHeight - paddingBottom} L ${coords[0].x} ${svgHeight - paddingBottom} Z`;
+    chartAreaPath.setAttribute('d', areaD);
+}
+
+/**
+ * Localized short currency abbreviation labels (e.g. 1.2M, 50k, 250)
+ */
+function formatCurrencyLabel(value) {
+    if (value >= 1000000) {
+        return (value / 1000000).toFixed(1).replace('.0', '') + 'M';
+    }
+    if (value >= 1000) {
+        return (value / 1000).toFixed(0) + 'k';
+    }
+    return Math.round(value);
+}
+
+/**
+ * Dynamically computes tracking cursor position and aligns tooltips/hover nodes
+ */
+function handleChartHover(e) {
+    if (!activeChartPoints || activeChartPoints.length === 0) return;
+    
+    const rect = chartWrapper.getBoundingClientRect();
+    const hoverX = e.clientX - rect.left;
+    
+    const svgWidth = 600;
+    const paddingLeft = 60;
+    const paddingRight = 20;
+    const chartWidth = svgWidth - paddingLeft - paddingRight;
+    
+    const svgX = (hoverX / rect.width) * svgWidth;
+    
+    let closestPoint = activeChartPoints[0];
+    let minDistance = Math.abs(closestPoint.cx - svgX);
+    
+    for (let i = 1; i < activeChartPoints.length; i++) {
+        const dist = Math.abs(activeChartPoints[i].cx - svgX);
+        if (dist < minDistance) {
+            minDistance = dist;
+            closestPoint = activeChartPoints[i];
+        }
+    }
+    
+    const pxX = (closestPoint.cx / svgWidth) * rect.width;
+    const pxY = (closestPoint.cy / 240) * rect.height;
+    
+    hoverLine.setAttribute('x1', closestPoint.cx);
+    hoverLine.setAttribute('x2', closestPoint.cx);
+    hoverLine.classList.remove('hidden');
+    
+    hoverPoint.setAttribute('cx', closestPoint.cx);
+    hoverPoint.setAttribute('cy', closestPoint.cy);
+    hoverPoint.classList.remove('hidden');
+    
+    chartTooltip.querySelector('.tooltip-date').textContent = closestPoint.date.toLocaleDateString('uk-UA', { month: 'long', year: 'numeric' });
+    chartTooltip.querySelector('.tooltip-value').textContent = formatCurrency(closestPoint.value);
+    
+    chartTooltip.style.left = `${pxX}px`;
+    chartTooltip.style.top = `${pxY}px`;
+    chartTooltip.classList.remove('hidden');
 }
