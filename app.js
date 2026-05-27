@@ -22,30 +22,30 @@ const SP500_START_DEFAULT = 6460;
 const CURRENCY_CONFIG = {
     UAH: {
         symbol: '₴', position: 'suffix',
-        presets: [10000, 20000, 50000, 100000, 250000, 500000],
-        presetLabels: ['10k', '20k', '50k', '100k', '250k', '500k'],
-        defaultDebt: 50000, defaultPresetIndex: 2,
+        presets: [1000, 5000, 10000, 20000, 50000, 100000],
+        presetLabels: ['1k', '5k', '10k', '20k', '50k', '100k'],
+        defaultDebt: 20000, defaultPresetIndex: 3,
         locale: 'uk-UA'
     },
     USD: {
         symbol: '$', position: 'prefix',
-        presets: [1000, 2000, 5000, 10000, 25000, 50000],
-        presetLabels: ['1k', '2k', '5k', '10k', '25k', '50k'],
-        defaultDebt: 5000, defaultPresetIndex: 2,
+        presets: [100, 200, 500, 1000, 2000, 5000],
+        presetLabels: ['100', '200', '500', '1k', '2k', '5k'],
+        defaultDebt: 1000, defaultPresetIndex: 3,
         locale: 'en-US'
     },
     EUR: {
         symbol: '€', position: 'prefix',
-        presets: [1000, 2000, 5000, 10000, 25000, 50000],
-        presetLabels: ['1k', '2k', '5k', '10k', '25k', '50k'],
-        defaultDebt: 5000, defaultPresetIndex: 2,
+        presets: [100, 200, 500, 1000, 2000, 5000],
+        presetLabels: ['100', '200', '500', '1k', '2k', '5k'],
+        defaultDebt: 1000, defaultPresetIndex: 3,
         locale: 'de-DE'
     },
     GBP: {
         symbol: '£', position: 'prefix',
-        presets: [1000, 2000, 5000, 10000, 25000, 50000],
-        presetLabels: ['1k', '2k', '5k', '10k', '25k', '50k'],
-        defaultDebt: 5000, defaultPresetIndex: 2,
+        presets: [100, 200, 500, 1000, 2000, 5000],
+        presetLabels: ['100', '200', '500', '1k', '2k', '5k'],
+        defaultDebt: 1000, defaultPresetIndex: 3,
         locale: 'en-GB'
     }
 };
@@ -507,6 +507,7 @@ let debtCurrencySelect;
 let issueDateInput;
 let elapsedTimeText;
 let maxRegretText;
+let regretCurrencySymbol;
 let regretCommentText;
 let gaugeFill;
 let gaugeNeedle;
@@ -560,6 +561,7 @@ document.addEventListener('DOMContentLoaded', () => {
     issueDateInput = document.getElementById('issue-date');
     elapsedTimeText = document.getElementById('elapsed-time-text');
     maxRegretText = document.getElementById('max-regret-amount');
+    regretCurrencySymbol = document.querySelector('.regret-currency');
     regretCommentText = document.getElementById('regret-comment');
     gaugeFill = document.getElementById('gauge-fill');
     gaugeNeedle = document.getElementById('gauge-needle');
@@ -606,6 +608,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Update presets for the initial currency
     updatePresetsForCurrency(currentCurrency);
+    
+    // Update regret currency symbol for the initial currency
+    if (regretCurrencySymbol && maxRegretText) {
+        const initialCfg = CURRENCY_CONFIG[currentCurrency];
+        regretCurrencySymbol.textContent = initialCfg.symbol;
+        const wrapper = regretCurrencySymbol.parentElement;
+        if (initialCfg.position === 'suffix') {
+            wrapper.appendChild(regretCurrencySymbol);
+        } else {
+            wrapper.insertBefore(regretCurrencySymbol, maxRegretText);
+        }
+    }
     
     // Parse & validate amount (if absent, use currency default)
     const urlAmount = parseFloat(urlParams.get('amount'));
@@ -801,6 +815,17 @@ function switchCurrency(currency) {
     presetButtons.forEach(btn => btn.classList.remove('active'));
     if (presetButtons[cfg.defaultPresetIndex]) {
         presetButtons[cfg.defaultPresetIndex].classList.add('active');
+    }
+    
+    // Update regret currency symbol and its position
+    if (regretCurrencySymbol && maxRegretText) {
+        regretCurrencySymbol.textContent = cfg.symbol;
+        const wrapper = regretCurrencySymbol.parentElement;
+        if (cfg.position === 'suffix') {
+            wrapper.appendChild(regretCurrencySymbol);
+        } else {
+            wrapper.insertBefore(regretCurrencySymbol, maxRegretText);
+        }
     }
     
     // Update amount label with correct currency name
