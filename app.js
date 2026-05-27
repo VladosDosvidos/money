@@ -165,6 +165,43 @@ const LANGUAGES = {
             "Irritation! Your money is devaluing, while it could have earned solid profits. You are sponsoring someone's life for free!",
             "PURE RAGE! Lost profit exceeded 40% of the debt! While your friend is stalling, gold or index funds would have made you a fortune. Time to act!"
         ]
+    },
+    es: {
+        titleGreeting: "Amigo",
+        titleQuestion: ", ¿dónde está mi <span class=\"gradient-text\">dinero?</span>",
+        subtitle: "Prestar dinero a un amigo al 0% es noble. Pero, ¿y si ese dinero estuviera trabajando en el mercado mientras esperas el retorno?",
+        controlsTitle: "Configuración de la Deuda",
+        amountLabel: "Monto de la Deuda, UAH",
+        placeholderAmount: "Ingrese el monto",
+        dateLabel: "¿Cuándo fue prestado?",
+        statusTitle: "Duración del Impago",
+        statusLoading: "Cargando...",
+        regretBadge: "Factor de Arrepentimiento 💔",
+        regretTitle: "La ganancia perdida es de",
+        notchCalm: "Cen (0%)",
+        notchDoubts: "Dudas (10%)",
+        notchAnxiety: "Ansiedad (20%)",
+        notchAnger: "Enojo (30%)",
+        notchFury: "Furia Pura (40%+)",
+        hintBtn: "Enviar una indirecta a tu amigo",
+        resultsHeading: "Escenarios de Inversión Alternativos",
+        resultsSubheading: "Esto es lo que habría generado ese dinero si se hubiera invertido a tasas de APY reales durante este período:",
+        modalTitleText: "Trayectoria del Crecimiento de la Inversión",
+        modalStartLabel: "Deuda Inicial",
+        modalProfitLabel: "Ganancia Neta",
+        modalEndLabel: "Valor Final",
+        modalInstructionText: "💡 <strong>Instrucciones:</strong> Pase el cursor (o toque en el móvil) sobre el gráfico para ver los valores mensuales detallados.",
+        sources: "Los datos se basan en tasas de mercado reales e históricas, cargadas dinámicamente a través de las API públicas del NBU para divisas y oro, así como el índice S&P 500. Los cálculos demuestran el costo de oportunidad real del capital.",
+        copyright: "© 2026. Creado con un toque de sarcasmo y sabiduría financiera para tu amigo.",
+        toastText: "¡Factura copiada! Envíasela por cualquier chat.",
+        regretComments: [
+            "Sin deuda: conciencia limpia, billetera vacía. Todos felices.",
+            "Aceptación. La pérdida es simbólica, pero tu amigo ya se ha comprado unos cafés premium a tu costa.",
+            "Dudas. Los intereses crecen más rápido que tu fe en que esta deuda sea devuelta pronto.",
+            "¡Ansiedad! Este préstamo sin intereses podría haber sido unas buenas vacaciones o un nuevo gadget. Tu amigo se relaja, tú cuentas monedas virtuales.",
+            "¡Irritación! Tu dinero se devalúa mientras podría haber generado ganancias sólidas. ¡Estás patrocinando la vida de alguien gratis!",
+            "¡FURIA PURA! ¡La ganancia perdida superó el 40% de la deuda! Mientras tu amigo da largas, el oro o las acciones te habrían hecho ganar una fortuna. ¡Es hora de actuar!"
+        ]
     }
 };
 
@@ -244,6 +281,44 @@ const INVESTMENTS_DATA_I18N = {
             badge: "Absolute Leader 👑",
             comment: "Gold Eldorado. Global instability pushed gold sky-high. Your friend is super expensive.",
             source: "Gold Rate API / NBU ↗"
+        }
+    ],
+    es: [
+        {
+            name: "Depósito Bancario en UAH",
+            badge: "Escenario Base",
+            comment: "La forma más fácil. Incluso el banco supera a tu amigo en confiabilidad.",
+            source: "Tasas UIRD / API NBU ↗"
+        },
+        {
+            name: "Bonos del Estado (UAH)",
+            badge: "Máxima Seguridad",
+            comment: "Comprado en la aplicación Diia en dos segundos. Respaldado por el gobierno y 100% libre de impuestos.",
+            source: "Estadísticas de Bonos / NBU ↗"
+        },
+        {
+            name: "Dólar en Efectivo (USD)",
+            badge: "Protección contra la Inflación",
+            comment: "Escudo pasivo. El Dólar sube de forma estable frente al UAH, salvándote de la inflación.",
+            source: "API de Cambio en Vivo / NBU ↗"
+        },
+        {
+            name: "Depósito USD / Staking USDT",
+            badge: "Doble Beneficio",
+            comment: "Staking de USDT en exchanges o depósito en USD. Doble beneficio: crecimiento de la divisa + intereses.",
+            source: "Cambio NBU + 6% APY ↗"
+        },
+        {
+            name: "Índice S&P 500",
+            badge: "Acciones de EE.UU.",
+            comment: "Poseer una parte de los 500 gigantes mundiales (Apple, Microsoft, Nvidia). Crecimiento fantástico.",
+            source: "Índice S&P 500 ↗"
+        },
+        {
+            name: "Oro (XAU)",
+            badge: "Líder Absoluto 👑",
+            comment: "El Dorado del oro. La inestabilidad global disparó el precio del oro. Tu amigo te sale súper caro.",
+            source: "API de Tasa de Oro / NBU ↗"
         }
     ]
 };
@@ -400,6 +475,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // 4. Set initial URL query parameters, read language parameter, and register language switch listeners
     const langUkBtn = document.getElementById('lang-uk');
     const langEnBtn = document.getElementById('lang-en');
+    const langEsBtn = document.getElementById('lang-es');
     
     if (langUkBtn) {
         langUkBtn.addEventListener('click', () => switchLanguage('uk'));
@@ -407,15 +483,20 @@ document.addEventListener('DOMContentLoaded', () => {
     if (langEnBtn) {
         langEnBtn.addEventListener('click', () => switchLanguage('en'));
     }
+    if (langEsBtn) {
+        langEsBtn.addEventListener('click', () => switchLanguage('es'));
+    }
     
     // Detect and apply language
     const urlLang = urlParams.get('lang');
-    if (urlLang === 'en' || urlLang === 'uk') {
+    if (urlLang === 'en' || urlLang === 'uk' || urlLang === 'es') {
         currentLang = urlLang;
     } else {
         const browserLang = navigator.language || navigator.userLanguage || 'uk';
         if (browserLang.startsWith('en')) {
             currentLang = 'en';
+        } else if (browserLang.startsWith('es')) {
+            currentLang = 'es';
         } else {
             currentLang = 'uk';
         }
@@ -584,7 +665,7 @@ function kebabToCamel(str) {
  * and recalculates alternative costs in real-time.
  */
 function switchLanguage(lang) {
-    if (lang !== 'uk' && lang !== 'en') return;
+    if (lang !== 'uk' && lang !== 'en' && lang !== 'es') return;
     currentLang = lang;
     
     // Update active class on switcher buttons
@@ -639,7 +720,13 @@ function applyLanguage(lang) {
         debtInput.placeholder = dict.placeholderAmount;
     }
     if (nameInput) {
-        nameInput.placeholder = lang === 'uk' ? "ім'я" : "name";
+        if (lang === 'uk') {
+            nameInput.placeholder = "ім'я";
+        } else if (lang === 'es') {
+            nameInput.placeholder = "nombre";
+        } else {
+            nameInput.placeholder = "name";
+        }
         adjustNameWidth();
     }
     
@@ -677,7 +764,13 @@ function applyLanguage(lang) {
         // Update chart click hint
         const hintEl = card.querySelector('.card-chart-hint');
         if (hintEl) {
-            hintEl.textContent = lang === 'uk' ? "Клікніть для аналізу графіка росту 📈" : "Click to analyze growth chart 📈";
+            if (lang === 'uk') {
+                hintEl.textContent = "Клікніть для аналізу графіка росту 📈";
+            } else if (lang === 'es') {
+                hintEl.textContent = "Haga clic para analizar el gráfico de crecimiento 📈";
+            } else {
+                hintEl.textContent = "Click to analyze growth chart 📈";
+            }
         }
     });
     
@@ -708,7 +801,7 @@ function applyLanguage(lang) {
     // 6. Update chart timelines if modal is open and has an active title
     if (chartModal && !chartModal.classList.contains('hidden') && chartLabelStart && chartLabelEnd) {
         const selectedDate = new Date(issueDateInput.value);
-        const localeStr = lang === 'uk' ? 'uk-UA' : 'en-US';
+        const localeStr = lang === 'uk' ? 'uk-UA' : (lang === 'es' ? 'es-ES' : 'en-US');
         chartLabelStart.textContent = selectedDate.toLocaleDateString(localeStr, { month: 'long', year: 'numeric' });
         chartLabelEnd.textContent = TODAY.toLocaleDateString(localeStr, { month: 'long', year: 'numeric' });
     }
@@ -741,6 +834,17 @@ async function calculateAndUpdate() {
             durationString += `${dateDetails.days} ${pluralize(dateDetails.days, 'день', 'дні', 'днів')}`;
         }
         elapsedTimeText.innerHTML = `Борг не повертається вже <strong>${durationString}</strong> (всього <strong>${diffDays}</strong> ${pluralize(diffDays, 'день', 'дні', 'днів')} безвідсоткового користування).`;
+    } else if (currentLang === 'es') {
+        if (dateDetails.years > 0) {
+            durationString += `${dateDetails.years} año${dateDetails.years === 1 ? '' : 's'} `;
+        }
+        if (dateDetails.months > 0) {
+            durationString += `${dateDetails.months} mes${dateDetails.months === 1 ? '' : 'es'} `;
+        }
+        if (dateDetails.days > 0 || durationString === '') {
+            durationString += `${dateDetails.days} día${dateDetails.days === 1 ? '' : 's'}`;
+        }
+        elapsedTimeText.innerHTML = `La deuda no se ha devuelto desde hace <strong>${durationString}</strong> (un total de <strong>${diffDays}</strong> día${diffDays === 1 ? '' : 's'} de uso sin intereses).`;
     } else {
         if (dateDetails.years > 0) {
             durationString += `${dateDetails.years} year${dateDetails.years === 1 ? '' : 's'} `;
@@ -773,10 +877,16 @@ async function calculateAndUpdate() {
         // Show loading animations
         controlsPanel.classList.add('loading-state');
         statusIndicator.classList.add('loading');
-        statusTitle.textContent = currentLang === 'uk' ? "Оновлення курсів з API..." : "Updating rates from API...";
-        elapsedTimeText.innerHTML = currentLang === 'uk'
-            ? "Звертаємось до API Національного банку України для отримання котирувань..."
-            : "Contacting the National Bank of Ukraine API to retrieve quotes...";
+        if (currentLang === 'uk') {
+            statusTitle.textContent = "Оновлення курсів з API...";
+            elapsedTimeText.innerHTML = "Звертаємось до API Національного банку України для отримання котирувань...";
+        } else if (currentLang === 'es') {
+            statusTitle.textContent = "Actualizando tasas desde la API...";
+            elapsedTimeText.innerHTML = "Contactando la API del Banco Nacional de Ucrania para obtener las cotizaciones...";
+        } else {
+            statusTitle.textContent = "Updating rates from API...";
+            elapsedTimeText.innerHTML = "Contacting the National Bank of Ukraine API to retrieve quotes...";
+        }
         
         investCards.forEach(card => card.classList.add('loading', 'loading-shimmer'));
         maxRegretText.classList.add('loading');
@@ -793,6 +903,8 @@ async function calculateAndUpdate() {
             // Restore elapsed time text
             if (currentLang === 'uk') {
                 elapsedTimeText.innerHTML = `Борг не повертається вже <strong>${durationString}</strong> (всього <strong>${diffDays}</strong> ${pluralize(diffDays, 'день', 'дні', 'днів')} безвідсоткового користування).`;
+            } else if (currentLang === 'es') {
+                elapsedTimeText.innerHTML = `La deuda no se ha devuelto desde hace <strong>${durationString}</strong> (un total de <strong>${diffDays}</strong> día${diffDays === 1 ? '' : 's'} de uso sin intereses).`;
             } else {
                 elapsedTimeText.innerHTML = `Debt has not been returned for <strong>${durationString}</strong> (total of <strong>${diffDays}</strong> day${diffDays === 1 ? '' : 's'} of interest-free usage).`;
             }
@@ -803,6 +915,8 @@ async function calculateAndUpdate() {
             // Show notice that we fell back to safe defaults
             if (currentLang === 'uk') {
                 elapsedTimeText.innerHTML = `Борг не повертається вже <strong>${durationString}</strong>. ⚠️ <span style="color: var(--color-gold);">Використовуються орієнтовні ринкові ставки (офлайн режим)</span>`;
+            } else if (currentLang === 'es') {
+                elapsedTimeText.innerHTML = `La deuda no se ha devuelto desde hace <strong>${durationString}</strong>. ⚠️ <span style="color: var(--color-gold);">Se están utilizando tasas de mercado estimadas (modo offline)</span>`;
             } else {
                 elapsedTimeText.innerHTML = `Debt has not been returned for <strong>${durationString}</strong>. ⚠️ <span style="color: var(--color-gold);">Estimated market rates are used (offline mode)</span>`;
             }
@@ -810,7 +924,13 @@ async function calculateAndUpdate() {
             isLoading = false;
             controlsPanel.classList.remove('loading-state');
             statusIndicator.classList.remove('loading');
-            statusTitle.textContent = currentLang === 'uk' ? "Тривалість прострочення" : "Duration of Default";
+            if (currentLang === 'uk') {
+                statusTitle.textContent = "Тривалість прострочення";
+            } else if (currentLang === 'es') {
+                statusTitle.textContent = "Duración del Impago";
+            } else {
+                statusTitle.textContent = "Duration of Default";
+            }
             
             investCards.forEach(card => card.classList.remove('loading', 'loading-shimmer'));
             maxRegretText.classList.remove('loading');
@@ -906,6 +1026,27 @@ async function calculateAndUpdate() {
                         break;
                     case 5:
                         rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">шалене ралі</span>`;
+                        break;
+                }
+            } else if (currentLang === 'es') {
+                switch (index) {
+                    case 0:
+                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">neto</span>`;
+                        break;
+                    case 1:
+                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">sin impuestos</span>`;
+                        break;
+                    case 2:
+                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">crecimiento del cambio</span>`;
+                        break;
+                    case 3:
+                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">cambio + 6% stake</span>`;
+                        break;
+                    case 4:
+                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">fondo (VOO)</span>`;
+                        break;
+                    case 5:
+                        rateBadge.innerHTML = `${apyValue.toFixed(2)}% APY <span class="rate-note">rally loco</span>`;
                         break;
                 }
             } else {
@@ -1171,7 +1312,7 @@ function pluralize(number, one, two, five) {
    Share Feature (Hint Creator)
    ========================================================================== */
 function handleShareHint() {
-    const localeStr = currentLang === 'uk' ? 'uk-UA' : 'en-US';
+    const localeStr = currentLang === 'uk' ? 'uk-UA' : (currentLang === 'es' ? 'es-ES' : 'en-US');
     const selectedDateStr = new Date(issueDateInput.value).toLocaleDateString(localeStr);
     const formattedDebt = formatCurrency(currentDebt);
     
@@ -1189,6 +1330,10 @@ function handleShareHint() {
     if (currentLang === 'uk') {
         const greeting = nameVal ? `Привіт, ${nameVal}!` : `Привіт!`;
         message = `${greeting} Нагадую про дружній борг у розмірі ${formattedDebt}, який було видано ${selectedDateStr} (${currentDays} днів тому).\n\nЗа цей час, якби я вклав ці гроші у золото, чистий прибуток склав би ${formattedGoldProfit}. В ОВДП без податків я б заробив ${formattedOvdpProfit}.\n\nМоже, пора повертати? Розрахунок альтернативної вартості тут: ${window.location.href}`;
+    } else if (currentLang === 'es') {
+        const greeting = nameVal ? `¡Hola, ${nameVal}!` : `¡Hola!`;
+        const dayStr = currentDays === 1 ? 'día' : 'días';
+        message = `${greeting} Solo un recordatorio amistoso sobre la deuda de ${formattedDebt} del ${selectedDateStr} (hace ${currentDays} ${dayStr}).\n\nSi hubiera invertido ese dinero en oro durante este tiempo, mi ganancia neta sería de ${formattedGoldProfit}. En bonos del Estado libres de impuestos, habría ganado ${formattedOvdpProfit}.\n\n¿Tal vez sea hora de devolverlo? El cálculo del costo de oportunidad está aquí: ${window.location.href}`;
     } else {
         const greeting = nameVal ? `Hi ${nameVal}!` : `Hi!`;
         const dayStr = currentDays === 1 ? 'day' : 'days';
@@ -1208,7 +1353,9 @@ function handleShareHint() {
         console.error('Не вдалося скопіювати текст: ', err);
         const errMsg = currentLang === 'uk'
             ? 'Не вдалося скопіювати текст автоматично. Скопіюйте розрахунок вручну:\n\n'
-            : 'Failed to copy text automatically. Please copy the calculation manually:\n\n';
+            : (currentLang === 'es'
+                ? 'No se pudo copiar el texto automáticamente. Copie el cálculo manualmente:\n\n'
+                : 'Failed to copy text automatically. Please copy the calculation manually:\n\n');
         alert(errMsg + message);
     });
 }
@@ -1248,7 +1395,7 @@ function openChartModal(index) {
     
     modalTitleText.textContent = currentLang === 'uk'
         ? `Траєкторія росту: ${cardData.name}`
-        : `Growth Trajectory: ${cardData.name}`;
+        : (currentLang === 'es' ? `Trayectoria de crecimiento: ${cardData.name}` : `Growth Trajectory: ${cardData.name}`);
     
     // Extract actual yields from animated states
     const startDebt = currentDebt;
@@ -1261,7 +1408,7 @@ function openChartModal(index) {
     
     // Set chart timeline bounds
     const selectedDate = new Date(issueDateInput.value);
-    const localeStr = currentLang === 'uk' ? 'uk-UA' : 'en-US';
+    const localeStr = currentLang === 'uk' ? 'uk-UA' : (currentLang === 'es' ? 'es-ES' : 'en-US');
     chartLabelStart.textContent = selectedDate.toLocaleDateString(localeStr, { month: 'long', year: 'numeric' });
     chartLabelEnd.textContent = TODAY.toLocaleDateString(localeStr, { month: 'long', year: 'numeric' });
     
@@ -1466,7 +1613,7 @@ function handleChartHover(e) {
     hoverPoint.setAttribute('cy', closestPoint.cy);
     hoverPoint.classList.remove('hidden');
     
-    const tooltipDateLocale = currentLang === 'uk' ? 'uk-UA' : 'en-US';
+    const tooltipDateLocale = currentLang === 'uk' ? 'uk-UA' : (currentLang === 'es' ? 'es-ES' : 'en-US');
     chartTooltip.querySelector('.tooltip-date').textContent = closestPoint.date.toLocaleDateString(tooltipDateLocale, { month: 'long', year: 'numeric' });
     chartTooltip.querySelector('.tooltip-value').textContent = formatCurrency(closestPoint.value);
     
