@@ -36,12 +36,23 @@
     <div class="container animate-fade-in">
         <!-- Header -->
         <header class="app-header">
-            <div class="logo">
-                <span class="logo-emoji">💸</span>
-                <span class="logo-text">Alternative Cost</span>
+            <div class="header-top-row">
+                <div class="logo">
+                    <span class="logo-emoji">💸</span>
+                    <span class="logo-text">Alternative Cost</span>
+                </div>
+                <div class="lang-switcher">
+                    <button class="lang-btn active" id="lang-uk" data-lang="uk">UA</button>
+                    <span class="lang-divider">|</span>
+                    <button class="lang-btn" id="lang-en" data-lang="en">EN</button>
+                </div>
             </div>
-            <h1 class="main-title">Друже <span class="name-input-container"><input type="text" id="friend-name" placeholder="ім'я" autocomplete="off" maxlength="20"></span>, де мої <span class="gradient-text">гроші?</span></h1>
-            <p class="subtitle">Позичка другу під 0% річних — благородний вчинок. Але що, якби ці кошти працювали на ринку, поки борг не повертають?</p>
+            <h1 class="main-title">
+                <span id="title-greeting" data-i18n="title-greeting">Друже</span>
+                <span class="name-input-container"><input type="text" id="friend-name" placeholder="ім'я" autocomplete="off" maxlength="20"></span>
+                <span id="title-question" data-i18n="title-question">, де мої <span class="gradient-text">гроші?</span></span>
+            </h1>
+            <p class="subtitle" data-i18n="subtitle">Позичка другу під 0% річних — благородний вчинок. Але що, якби ці кошти працювали на ринку, поки борг не повертають?</p>
         </header>
 
         <!-- Main Calculator Layout -->
@@ -49,11 +60,11 @@
             
             <!-- Sidebar Controls -->
             <section class="controls-panel glass">
-                <h2 class="panel-title">Налаштування боргу</h2>
+                <h2 class="panel-title" data-i18n="controls-title">Налаштування боргу</h2>
                 
                 <!-- Debt Amount Input -->
                 <div class="input-group">
-                    <label for="debt-amount">Сума боргу, грн</label>
+                    <label for="debt-amount" data-i18n="amount-label">Сума боргу, грн</label>
                     <div class="number-input-wrapper">
                         <input type="number" id="debt-amount" min="1" max="100000000" value="50000" placeholder="Введіть суму">
                         <span class="currency-badge">UAH</span>
@@ -72,7 +83,7 @@
                 
                 <!-- Date Picker -->
                 <div class="input-group">
-                    <label for="issue-date">Коли борг було видано?</label>
+                    <label for="issue-date" data-i18n="date-label">Коли борг було видано?</label>
                     <div class="date-input-wrapper">
                         <input type="date" id="issue-date" max="2026-05-21">
                         <svg class="calendar-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -88,16 +99,16 @@
                 <div class="status-box glass-inset" id="status-box">
                     <div class="status-header">
                         <span class="status-indicator" id="status-indicator"></span>
-                        <span class="status-title" id="status-title">Тривалість прострочення</span>
+                        <span class="status-title" id="status-title" data-i18n="status-title">Тривалість прострочення</span>
                     </div>
-                    <p class="status-text" id="elapsed-time-text">Завантаження...</p>
+                    <p class="status-text" id="elapsed-time-text" data-i18n="status-loading">Завантаження...</p>
                 </div>
             </section>
 
             <!-- Regret / Summary Panel -->
             <section class="summary-panel glass">
                 <div class="summary-meta">
-                    <span class="regret-badge">Фактор жалю 💔</span>
+                    <span class="regret-badge" data-i18n="regret-badge">Фактор жалю 💔</span>
                 </div>
                 <div class="regret-title">Втрачена вигода становить</div>
                 <div class="regret-value-wrapper">
@@ -141,11 +152,11 @@
                     
                     <!-- Highly detailed gradations below the gauge -->
                     <div class="gauge-labels">
-                        <span class="label-calm">Смирення (0%)</span>
-                        <span class="label-doubts">Сумніви (10%)</span>
-                        <span class="label-anxiety">Тривога (20%)</span>
-                        <span class="label-anger">Гнів (30%)</span>
-                        <span class="label-fury">Лють (40%+)</span>
+                        <span class="label-calm" data-i18n="notch-calm">Смирення (0%)</span>
+                        <span class="label-doubts" data-i18n="notch-doubts">Сумніви (10%)</span>
+                        <span class="label-anxiety" data-i18n="notch-anxiety">Тривога (20%)</span>
+                        <span class="label-anger" data-i18n="notch-anger">Гнів (30%)</span>
+                        <span class="label-fury" data-i18n="notch-fury">Лють (40%+)</span>
                     </div>
                 </div>
 
@@ -158,7 +169,7 @@
                             <line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line>
                             <line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line>
                         </svg>
-                        Надіслати натяк другу
+                        <span data-i18n="hint-btn">Надіслати натяк другу</span>
                     </button>
                 </div>
             </section>
@@ -167,8 +178,8 @@
 
         <!-- Dynamic Investment Cards Section -->
         <section class="results-section">
-            <h2 class="section-heading">Альтернативні сценарії інвестування</h2>
-            <p class="section-subheading">Ось скільки б принесли ці гроші, якби ти вклав їх під реальні річні ставки APY за цей період:</p>
+            <h2 class="section-heading" data-i18n="results-heading">Альтернативні сценарії інвестування</h2>
+            <p class="section-subheading" data-i18n="results-subheading">Ось скільки б принесли ці гроші, якби ти вклав їх під реальні річні ставки APY за цей період:</p>
 
             <div class="cards-grid" id="cards-grid">
                 
@@ -355,18 +366,18 @@
                             </svg>
                         </div>
                         <div class="card-title-group">
-                            <h3 class="card-title">Золото (XAU)</h3>
-                            <span class="card-badge badge-gold">Абсолютний лідер 👑</span>
+                            <h3 class="card-title" data-i18n="card-title-5">Золото (XAU)</h3>
+                            <span class="card-badge badge-gold" data-i18n="badge-gold">Абсолютний лідер 👑</span>
                         </div>
                     </header>
                     <div class="card-body">
-                        <div class="rate-badge highlight-gold">61.38% APY <span class="rate-note">шалене світове ралі</span></div>
+                        <div class="rate-badge highlight-gold">61.38% APY <span class="rate-note" data-i18n="rate-note-gold">шалене світове ралі</span></div>
                         <div class="math-row">
-                            <span class="label">Фінальна сума</span>
+                            <span class="label" data-i18n="final-sum">Фінальна сума</span>
                             <span class="value font-numeric" id="card-sum-5">0 ₴</span>
                         </div>
                         <div class="math-row divider">
-                            <span class="label">Чистий прибуток</span>
+                            <span class="label" data-i18n="net-profit">Чистий прибуток</span>
                             <span class="value profit font-numeric" id="card-profit-5">+0 ₴</span>
                         </div>
                         <p class="card-comment" id="card-comment-5">Золоте Ельдорадо. Світова нестабільність штовхнула метал угору. Твій друг виявився супер-витратним.</p>
@@ -400,7 +411,7 @@
             <header class="modal-header">
                 <div class="modal-title-group">
                     <span class="modal-icon-box" id="modal-icon">📈</span>
-                    <h3 class="modal-title" id="modal-title-text">Траєкторія росту інвестицій</h3>
+                    <h3 class="modal-title" id="modal-title-text" data-i18n="modal-title-text">Траєкторія росту інвестицій</h3>
                 </div>
                 <button class="modal-close-btn" id="modal-close-btn" aria-label="Закрити">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20">
@@ -413,20 +424,20 @@
                 <!-- Instructions and Summary -->
                 <div class="modal-summary-box glass-inset">
                     <div class="summary-metric">
-                        <span class="label">Початковий борг</span>
+                        <span class="label" data-i18n="modal-start-label">Початковий борг</span>
                         <span class="value font-numeric" id="modal-start-amount">0 ₴</span>
                     </div>
                     <div class="summary-metric">
-                        <span class="label">Чистий прибуток</span>
+                        <span class="label" data-i18n="modal-profit-label">Чистий прибуток</span>
                         <span class="value profit font-numeric" id="modal-profit-amount">+0 ₴</span>
                     </div>
                     <div class="summary-metric">
-                        <span class="label">Кінцева сума</span>
+                        <span class="label" data-i18n="modal-end-label">Кінцева сума</span>
                         <span class="value font-numeric" id="modal-end-amount">0 ₴</span>
                     </div>
                 </div>
                 
-                <p class="modal-instruction">💡 <strong>Інструкція:</strong> Наводьте курсор (або торкайтеся пальцем на мобільному) на графік, щоб переглянути проміжні результати за кожен місяць.</p>
+                <p class="modal-instruction" id="modal-instruction-text" data-i18n="modal-instruction-text">💡 <strong>Інструкція:</strong> Наводьте курсор (або торкайтеся пальцем на мобільному) на графік, щоб переглянути проміжні результати за кожен місяць.</p>
                 
                 <!-- Dynamic SVG Chart Area -->
                 <div class="chart-wrapper" id="chart-wrapper">
