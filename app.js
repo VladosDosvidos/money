@@ -99,24 +99,24 @@ let currentDebt = 50000;
 let currentDays = 273; // 9 months (Aug 22, 2025 to May 22, 2026 is ~273 days)
 let isLoading = false;
 
-// Target elements
-const debtInput = document.getElementById('debt-amount');
-const issueDateInput = document.getElementById('issue-date');
-const elapsedTimeText = document.getElementById('elapsed-time-text');
-const maxRegretText = document.getElementById('max-regret-amount');
-const regretCommentText = document.getElementById('regret-comment');
-const gaugeFill = document.getElementById('gauge-fill');
-const gaugeNeedle = document.getElementById('gauge-needle');
-const gaugeRegretPercent = document.getElementById('gauge-regret-percent');
-const presetButtons = document.querySelectorAll('.preset-btn');
-const shareHintBtn = document.getElementById('share-hint-btn');
-const toast = document.getElementById('toast');
+// Target elements - declared globally, initialized in DOMContentLoaded
+let debtInput;
+let issueDateInput;
+let elapsedTimeText;
+let maxRegretText;
+let regretCommentText;
+let gaugeFill;
+let gaugeNeedle;
+let gaugeRegretPercent;
+let presetButtons;
+let shareHintBtn;
+let toast;
 
 // Loading UI elements
-const controlsPanel = document.querySelector('.controls-panel');
-const statusIndicator = document.getElementById('status-indicator');
-const statusTitle = document.getElementById('status-title');
-const investCards = document.querySelectorAll('.invest-card');
+let controlsPanel;
+let statusIndicator;
+let statusTitle;
+let investCards;
 
 // Map to keep track of current shown totals to animate from them smoothly
 const animatedStates = {
@@ -128,6 +128,24 @@ const animatedStates = {
    Initialization
    ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
+    // Initialize DOM elements
+    debtInput = document.getElementById('debt-amount');
+    issueDateInput = document.getElementById('issue-date');
+    elapsedTimeText = document.getElementById('elapsed-time-text');
+    maxRegretText = document.getElementById('max-regret-amount');
+    regretCommentText = document.getElementById('regret-comment');
+    gaugeFill = document.getElementById('gauge-fill');
+    gaugeNeedle = document.getElementById('gauge-needle');
+    gaugeRegretPercent = document.getElementById('gauge-regret-percent');
+    presetButtons = document.querySelectorAll('.preset-btn');
+    shareHintBtn = document.getElementById('share-hint-btn');
+    toast = document.getElementById('toast');
+    
+    controlsPanel = document.querySelector('.controls-panel');
+    statusIndicator = document.getElementById('status-indicator');
+    statusTitle = document.getElementById('status-title');
+    investCards = document.querySelectorAll('.invest-card');
+
     // 1. Read parameters from URL search query
     const urlParams = new URLSearchParams(window.location.search);
     
@@ -439,7 +457,8 @@ async function calculateAndUpdate() {
     // Fill gauge SVG arc (length is 125.6px)
     const strokeDashoffset = 125.6 - (regretPercentage / 100) * 125.6;
     if (gaugeFill) {
-        gaugeFill.style.strokeDashoffset = strokeDashoffset;
+        gaugeFill.setAttribute('stroke-dashoffset', strokeDashoffset);
+        gaugeFill.style.strokeDashoffset = `${strokeDashoffset}px`;
     }
     
     // Display percentage in center
