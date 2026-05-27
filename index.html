@@ -100,14 +100,45 @@
                 <p class="regret-description" id="regret-comment">Ці гроші просто розчинилися в повітрі. Точніше, залишилися у кишені твого друга...</p>
                 
                 <!-- Regret Scale Visualized -->
-                <div class="regret-scale-container">
-                    <div class="scale-label-row">
-                        <span>Смирення</span>
-                        <span>Тривога</span>
-                        <span>Лють</span>
+                <!-- Regret Gauge Visualized (Speedometer) -->
+                <div class="regret-gauge-container">
+                    <div class="regret-gauge-wrapper">
+                        <div class="regret-gauge">
+                            <svg viewBox="0 0 100 50" class="gauge-svg">
+                                <!-- Background Arc -->
+                                <path d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="rgba(255, 255, 255, 0.05)" stroke-width="8" stroke-linecap="round" />
+                                <!-- Active Fill Arc with Gradient -->
+                                <path id="gauge-fill" d="M 10 50 A 40 40 0 0 1 90 50" fill="none" stroke="url(#gauge-grad)" stroke-width="8" stroke-linecap="round" stroke-dasharray="125.6" stroke-dashoffset="125.6" />
+                                
+                                <defs>
+                                    <linearGradient id="gauge-grad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stop-color="var(--color-emerald)" />
+                                        <stop offset="25%" stop-color="var(--color-cyan)" />
+                                        <stop offset="50%" stop-color="var(--color-gold)" />
+                                        <stop offset="75%" stop-color="#ff7b00" />
+                                        <stop offset="100%" stop-color="var(--color-coral)" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            
+                            <!-- Rotating Needle -->
+                            <div class="gauge-needle-wrapper">
+                                <div class="gauge-needle" id="gauge-needle"></div>
+                                <div class="gauge-center-pin"></div>
+                            </div>
+                        </div>
+                        
+                        <!-- Percentage Display in Center -->
+                        <div class="gauge-value" id="gauge-regret-percent">0%</div>
                     </div>
-                    <div class="scale-track">
-                        <div class="scale-fill" id="regret-scale-fill"></div>
+                    
+                    <!-- Highly detailed gradations below the gauge -->
+                    <div class="gauge-labels">
+                        <span class="label-calm">Смирення (0%)</span>
+                        <span class="label-doubts">Сумніви (5%)</span>
+                        <span class="label-anxiety">Тривога (10%)</span>
+                        <span class="label-anger">Гнів (15%)</span>
+                        <span class="label-fury">Лють (20%+)</span>
                     </div>
                 </div>
 

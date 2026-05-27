@@ -434,40 +434,121 @@ body {
     min-height: 48px; /* Prevents shifting when text changes */
 }
 
-/* Regret Scale Track */
-.regret-scale-container {
+/* Regret Gauge Visualized (Speedometer) */
+.regret-gauge-container {
     display: flex;
     flex-direction: column;
-    gap: 6px;
+    align-items: center;
+    gap: 16px;
     margin-bottom: 32px;
 }
 
-.scale-label-row {
+.regret-gauge-wrapper {
+    position: relative;
+    width: 220px;
+    height: 110px;
+    margin-top: 10px;
+}
+
+.regret-gauge {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+}
+
+.gauge-svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.3));
+}
+
+#gauge-fill {
+    transition: stroke-dashoffset 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+}
+
+.gauge-needle-wrapper {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 0;
+}
+
+.gauge-needle {
+    position: absolute;
+    bottom: -4px;
+    left: -2px; /* Center alignment */
+    width: 4px;
+    height: 85px;
+    background: var(--color-text-primary);
+    border-radius: 4px;
+    transform-origin: bottom center;
+    transform: rotate(-90deg); /* 0% default */
+    transition: transform 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+    box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+    z-index: 10;
+}
+
+/* Elegant needle pin in center bottom */
+.gauge-center-pin {
+    position: absolute;
+    bottom: -8px;
+    left: -8px;
+    width: 16px;
+    height: 16px;
+    background: var(--color-text-primary);
+    border-radius: 50%;
+    border: 3px solid #1a1c26;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+    z-index: 11;
+}
+
+/* Percentage display in the arc center */
+.gauge-value {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 1.8rem;
+    font-weight: 800;
+    color: var(--color-gold);
+    text-shadow: 0 0 15px var(--color-gold-glow);
+    z-index: 5;
+    font-family: var(--font-sans);
+}
+
+/* Tick Labels Spaced Below Gauge */
+.gauge-labels {
     display: flex;
     justify-content: space-between;
-    font-size: 0.75rem;
+    width: 100%;
+    padding: 0 4px;
+    font-size: 0.68rem;
     font-weight: 600;
     color: var(--color-text-muted);
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.02em;
 }
 
-.scale-track {
-    width: 100%;
-    height: 6px;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    overflow: hidden;
-    position: relative;
+.gauge-labels span {
+    transition: var(--transition-smooth);
+    opacity: 0.55;
+    text-align: center;
 }
 
-.scale-fill {
-    height: 100%;
-    width: 50%;
-    background: linear-gradient(90deg, var(--color-emerald) 0%, var(--color-gold) 60%, var(--color-coral) 100%);
-    border-radius: 10px;
-    transition: width 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+/* Active highlights depending on the current regret level */
+.gauge-labels span.active {
+    opacity: 1;
+    color: var(--color-text-primary);
+    text-shadow: 0 0 8px rgba(255, 255, 255, 0.2);
 }
+
+.gauge-labels .label-calm.active { color: var(--color-emerald); text-shadow: 0 0 8px var(--color-emerald-glow); }
+.gauge-labels .label-doubts.active { color: var(--color-cyan); text-shadow: 0 0 8px var(--color-cyan-glow); }
+.gauge-labels .label-anxiety.active { color: var(--color-gold); text-shadow: 0 0 8px var(--color-gold-glow); }
+.gauge-labels .label-anger.active { color: #ff7b00; text-shadow: 0 0 8px rgba(255, 123, 0, 0.2); }
+.gauge-labels .label-fury.active { color: var(--color-coral); text-shadow: 0 0 8px var(--color-coral-glow); }
 
 /* Buttons */
 .action-buttons {

@@ -105,7 +105,9 @@ const issueDateInput = document.getElementById('issue-date');
 const elapsedTimeText = document.getElementById('elapsed-time-text');
 const maxRegretText = document.getElementById('max-regret-amount');
 const regretCommentText = document.getElementById('regret-comment');
-const regretScaleFill = document.getElementById('regret-scale-fill');
+const gaugeFill = document.getElementById('gauge-fill');
+const gaugeNeedle = document.getElementById('gauge-needle');
+const gaugeRegretPercent = document.getElementById('gauge-regret-percent');
 const presetButtons = document.querySelectorAll('.preset-btn');
 const shareHintBtn = document.getElementById('share-hint-btn');
 const toast = document.getElementById('toast');
@@ -422,23 +424,64 @@ async function calculateAndUpdate() {
     animateNumber(maxRegretText, animatedStates.maxRegret, maxProfit, 800, false);
     animatedStates.maxRegret = maxProfit;
     
-    // Update Regret scale bar width
+    // Update Speedometer Regret Gauge (Max out at 20% yield)
     const yieldPercentage = currentDebt > 0 ? (maxProfit / currentDebt) : 0;
-    const fillWidth = Math.min(100, Math.round(yieldPercentage * 200)); // 50% yield = 100% fill
-    regretScaleFill.style.width = `${fillWidth}%`;
     
-    // Set dynamic sarcastic regret comment based on value
+    // 20% yield = 100% regret
+    const regretPercentage = Math.min(100, Math.round((yieldPercentage / 0.20) * 100));
+    
+    // Rotate needle from -90deg (0%) to +90deg (100%)
+    const needleAngle = -90 + (regretPercentage / 100) * 180;
+    if (gaugeNeedle) {
+        gaugeNeedle.style.transform = `rotate(${needleAngle}deg)`;
+    }
+    
+    // Fill gauge SVG arc (length is 125.6px)
+    const strokeDashoffset = 125.6 - (regretPercentage / 100) * 125.6;
+    if (gaugeFill) {
+        gaugeFill.style.strokeDashoffset = strokeDashoffset;
+    }
+    
+    // Display percentage in center
+    if (gaugeRegretPercent) {
+        gaugeRegretPercent.textContent = `${regretPercentage}%`;
+    }
+    
+    // Highlight the active gradation label under the speedometer
+    const labels = document.querySelectorAll('.gauge-labels span');
+    labels.forEach(l => l.classList.remove('active'));
+    
+    if (regretPercentage === 0) {
+        const lbl = document.querySelector('.label-calm');
+        if (lbl) lbl.classList.add('active');
+    } else if (regretPercentage > 0 && regretPercentage <= 25) {
+        const lbl = document.querySelector('.label-doubts');
+        if (lbl) lbl.classList.add('active');
+    } else if (regretPercentage > 25 && regretPercentage <= 50) {
+        const lbl = document.querySelector('.label-anxiety');
+        if (lbl) lbl.classList.add('active');
+    } else if (regretPercentage > 50 && regretPercentage < 100) {
+        const lbl = document.querySelector('.label-anger');
+        if (lbl) lbl.classList.add('active');
+    } else if (regretPercentage === 100) {
+        const lbl = document.querySelector('.label-fury');
+        if (lbl) lbl.classList.add('active');
+    }
+    
+    // Set dynamic sarcastic regret comment based on exact regret level (6 high-res levels)
     let regretComment = '';
-    if (maxProfit === 0) {
+    if (regretPercentage === 0) {
         regretComment = "Боргу немає — совість чиста, гаманець порожній. Всі щасливі.";
-    } else if (maxProfit < 1500) {
-        regretComment = "Смирення. Сума невелика, але на кілька десятків чашок ароматної кави з круасаном точно вистачило б.";
-    } else if (maxProfit < 6000) {
-        regretComment = "Тривога. Твій друг безкоштовно катається на твоїх заощадженнях, а ти міг би оновити гардероб чи купити корисний гаджет.";
-    } else if (maxProfit < 15000) {
-        regretComment = "Роздратування! На ці відсотки можна було влаштувати незабутній вікенд у Карпатах або орендувати круте житло на морі.";
-    } else {
-        regretComment = "ЛЮТЬ! Твій друг перевершив Нацбанк за темпами знецінення твоїх грошей. За цей час золото чи акції принесли б тобі цілий статок!";
+    } else if (regretPercentage > 0 && regretPercentage <= 10) {
+        regretComment = "Смирення. Втрати символічні, але на кілька чашок запашної кави з круасаном твій друг тебе вже нагрів.";
+    } else if (regretPercentage > 10 && regretPercentage <= 35) {
+        regretComment = "Сумніви. Відсотки ростуть швидше за твою віру в те, що гроші повернуть найближчим часом.";
+    } else if (regretPercentage > 35 && regretPercentage <= 65) {
+        regretComment = "Тривога! Цей безвідсотковий кредит міг би стати поїздкою в Карпати або новим гаджетом. Друг розважається, а ти рахуєш віртуальні гривні.";
+    } else if (regretPercentage > 65 && regretPercentage < 100) {
+        regretComment = "Роздратування! Гроші знецінюються, а набігли б солідні кошти. Ти спонсоруєш чуже життя безкоштовно!";
+    } else if (regretPercentage === 100) {
+        regretComment = "ЛЮТЬ! Втрачена вигода перевищила 20% від боргу! Поки твій друг тягне час, золото чи акції принесли б тобі цілий статок. Пора діяти!";
     }
     regretCommentText.textContent = regretComment;
 }
