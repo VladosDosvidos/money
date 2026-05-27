@@ -751,6 +751,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const langUkBtn = document.getElementById('lang-uk');
     const langEnBtn = document.getElementById('lang-en');
     const langEsBtn = document.getElementById('lang-es');
+    const langItBtn = document.getElementById('lang-it');
     
     if (langUkBtn) {
         langUkBtn.addEventListener('click', () => switchLanguage('uk'));
@@ -761,10 +762,13 @@ document.addEventListener('DOMContentLoaded', () => {
     if (langEsBtn) {
         langEsBtn.addEventListener('click', () => switchLanguage('es'));
     }
+    if (langItBtn) {
+        langItBtn.addEventListener('click', () => switchLanguage('it'));
+    }
     
     // Detect and apply language
     const urlLang = urlParams.get('lang');
-    if (urlLang === 'en' || urlLang === 'uk' || urlLang === 'es') {
+    if (urlLang === 'en' || urlLang === 'uk' || urlLang === 'es' || urlLang === 'it') {
         currentLang = urlLang;
     } else {
         const browserLang = navigator.language || navigator.userLanguage || 'uk';
@@ -772,6 +776,8 @@ document.addEventListener('DOMContentLoaded', () => {
             currentLang = 'en';
         } else if (browserLang.startsWith('es')) {
             currentLang = 'es';
+        } else if (browserLang.startsWith('it')) {
+            currentLang = 'it';
         } else {
             currentLang = 'uk';
         }
