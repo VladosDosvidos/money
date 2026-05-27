@@ -156,6 +156,9 @@ const LANGUAGES = {
         sources: "Дані базуються на реальних історичних та поточних ринкових курсах, що завантажуються динамічно через відкриті API НБУ для валюти та золота, а також на індексі S&P 500. Розрахунки демонструють реальну альтернаственную вартість капіталу.",
         copyright: "© 2026. Створено з легким сарказмом та фінансовою мудрістю для твого друга.",
         toastText: "Рахунок скопійовано! Надішли його в месенджер.",
+        netProfit: "Чистий прибуток",
+        finalSum: "Фінальна сума",
+        cardChartHint: "Клікніть для аналізу графіка росту 📈",
         regretComments: [
             "Боргу немає — совість чиста, гаманець порожній. Всі щасливі.",
             "Смирення. Втрати символічні, але на кілька чашок запашної кави з круасаном твій друг тебе вже нагрів.",
@@ -193,6 +196,9 @@ const LANGUAGES = {
         sources: "Data is based on actual historical and current market rates, loaded dynamically via open NBU APIs for currency and gold, as well as the S&P 500 index. Calculations demonstrate the real alternative cost of capital.",
         copyright: "© 2026. Created with mild sarcasm and financial wisdom for your friend.",
         toastText: "Invoice copied! Send it via any messenger.",
+        netProfit: "Net Profit",
+        finalSum: "Final Amount",
+        cardChartHint: "Click to analyze growth chart 📈",
         regretComments: [
             "No debt—conscience clear, wallet empty. Everyone is happy.",
             "Acceptance. The loss is symbolic, but your friend has already bought themselves a few premium coffees with your money.",
@@ -229,7 +235,10 @@ const LANGUAGES = {
         modalInstructionText: "💡 <strong>Instrucciones:</strong> Pase el cursor (o toque en el móvil) sobre el gráfico para ver los valores mensuales detallados.",
         sources: "Los datos se basan en tasas de mercado reales e históricas, cargadas dinámicamente a través de las API públicas del NBU para divisas y oro, así como el índice S&P 500. Los cálculos demuestran el costo de oportunidad real del capital.",
         copyright: "© 2026. Creado con un toque de sarcasmo y sabiduría financiera para tu amigo.",
-        toastText: "¡Factura copiada! Envíasela por cualquier chat.",
+        toastText: "¡Factura copiada! Envíala por cualquier mensajero.",
+        netProfit: "Ganancia Neta",
+        finalSum: "Monto Final",
+        cardChartHint: "Haz clic para analizar el gráfico 📈",
         regretComments: [
             "Sin deuda: conciencia limpia, billetera vacía. Todos felices.",
             "Aceptación. La pérdida es simbólica, pero tu amigo ya se ha comprado unos cafés premium a tu costa.",
