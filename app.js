@@ -442,11 +442,11 @@ async function calculateAndUpdate() {
     animateNumber(maxRegretText, animatedStates.maxRegret, maxProfit, 800, false);
     animatedStates.maxRegret = maxProfit;
     
-    // Update Speedometer Regret Gauge (Max out at 20% yield)
+    // Update Speedometer Regret Gauge (Max out at 40% yield)
     const yieldPercentage = currentDebt > 0 ? (maxProfit / currentDebt) : 0;
     
-    // 20% yield = 100% regret
-    const regretPercentage = Math.min(100, Math.round((yieldPercentage / 0.20) * 100));
+    // 40% yield = 100% regret
+    const regretPercentage = Math.min(100, Math.round((yieldPercentage / 0.40) * 100));
     
     // Rotate needle from -90deg (0%) to +90deg (100%)
     const needleAngle = -90 + (regretPercentage / 100) * 180;
