@@ -166,6 +166,45 @@ body {
     margin-bottom: 16px;
 }
 
+.name-input-container {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+}
+
+#friend-name {
+    font-family: var(--font-sans);
+    font-size: inherit;
+    font-weight: 800;
+    letter-spacing: inherit;
+    color: var(--color-cyan);
+    background: transparent;
+    border: none;
+    border-bottom: 2px dashed rgba(0, 229, 255, 0.4);
+    outline: none;
+    padding: 0 4px;
+    margin: 0;
+    width: 90px; /* Will be adjusted dynamically by JS, but standard fallback */
+    max-width: 100%;
+    text-align: center;
+    caret-color: var(--color-cyan);
+    transition: var(--transition-smooth);
+    text-shadow: 0 0 10px rgba(0, 229, 255, 0.2);
+}
+
+#friend-name:focus {
+    border-bottom: 2px solid var(--color-cyan);
+    text-shadow: 0 0 15px rgba(0, 229, 255, 0.6);
+}
+
+#friend-name::placeholder {
+    color: rgba(255, 255, 255, 0.15);
+    font-weight: 400;
+    font-style: italic;
+    border-bottom: 2px dashed rgba(255, 255, 255, 0.15);
+    text-shadow: none;
+}
+
 .gradient-text {
     background: var(--gradient-brand);
     -webkit-background-clip: text;

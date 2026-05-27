@@ -101,6 +101,7 @@ let isLoading = false;
 
 // Target elements - declared globally, initialized in DOMContentLoaded
 let debtInput;
+let nameInput;
 let issueDateInput;
 let elapsedTimeText;
 let maxRegretText;
@@ -130,6 +131,7 @@ const animatedStates = {
 document.addEventListener('DOMContentLoaded', () => {
     // Initialize DOM elements
     debtInput = document.getElementById('debt-amount');
+    nameInput = document.getElementById('friend-name');
     issueDateInput = document.getElementById('issue-date');
     elapsedTimeText = document.getElementById('elapsed-time-text');
     maxRegretText = document.getElementById('max-regret-amount');
@@ -170,6 +172,15 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     issueDateInput.value = initialDate.toISOString().split('T')[0];
     
+    // Parse & validate name
+    const urlName = urlParams.get('name');
+    if (urlName) {
+        nameInput.value = urlName;
+    } else {
+        nameInput.value = '';
+    }
+    adjustNameWidth();
+    
     // 2. Set max attribute for date picker (must not select today or future)
     const dayBeforeToday = new Date(TODAY);
     dayBeforeToday.setDate(TODAY.getDate() - 1);
@@ -193,6 +204,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // 6. Attach event listeners
     debtInput.addEventListener('input', handleDebtChange);
     issueDateInput.addEventListener('change', handleDateChange);
+    nameInput.addEventListener('input', () => {
+        adjustNameWidth();
+        syncParamsToUrl();
+    });
     
     // Explicit trigger for Chrome calendar picker on clicking anywhere inside the input box
     issueDateInput.addEventListener('click', () => {
@@ -222,7 +237,22 @@ function syncParamsToUrl() {
     const url = new URL(window.location.href);
     url.searchParams.set('amount', currentDebt);
     url.searchParams.set('date', issueDateInput.value);
+    
+    const nameVal = nameInput.value.trim();
+    if (nameVal) {
+        url.searchParams.set('name', nameVal);
+    } else {
+        url.searchParams.delete('name');
+    }
+    
     window.history.replaceState({}, '', url.toString());
+}
+
+/**
+ * Adjusts the width of the name input dynamically based on the character length of its content
+ */
+function adjustNameWidth() {
+    nameInput.style.width = Math.max(3, nameInput.value.length || nameInput.placeholder.length) + 'ch';
 }
 
 function handleDebtChange(e) {
@@ -702,8 +732,11 @@ function handleShareHint() {
     const formattedGoldProfit = formatCurrency(goldProfit);
     const formattedOvdpProfit = formatCurrency(ovdpProfit);
     
+    const nameVal = nameInput.value.trim();
+    const greeting = nameVal ? `Привіт, ${nameVal}!` : `Привіт!`;
+    
     // Construct sarcasm message
-    const message = `Привіт! Нагадую про дружній борг у розмірі ${formattedDebt}, який було видано ${selectedDateStr} (${currentDays} днів тому).\n\nЗа цей час, якби я вклав ці гроші у золото, чистий прибуток склав би ${formattedGoldProfit}. В ОВДП без податків я б заробив ${formattedOvdpProfit}.\n\nМоже, пора повертати? Розрахунок альтернативної вартості тут: ${window.location.href}`;
+    const message = `${greeting} Нагадую про дружній борг у розмірі ${formattedDebt}, який було видано ${selectedDateStr} (${currentDays} днів тому).\n\nЗа цей час, якби я вклав ці гроші у золото, чистий прибуток склав би ${formattedGoldProfit}. В ОВДП без податків я б заробив ${formattedOvdpProfit}.\n\nМоже, пора повертати? Розрахунок альтернативної вартості тут: ${window.location.href}`;
     
     // Copy to clipboard
     navigator.clipboard.writeText(message).then(() => {
