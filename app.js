@@ -126,19 +126,51 @@ const animatedStates = {
    Initialization
    ========================================================================== */
 document.addEventListener('DOMContentLoaded', () => {
-    // 1. Set default date picker value (exactly 9 months ago: Aug 22, 2025)
-    const defaultDate = new Date('2025-08-22');
-    issueDateInput.value = defaultDate.toISOString().split('T')[0];
+    // 1. Read parameters from URL search query
+    const urlParams = new URLSearchParams(window.location.search);
+    
+    // Parse & validate amount
+    const urlAmount = parseFloat(urlParams.get('amount'));
+    if (!isNaN(urlAmount) && urlAmount > 0) {
+        currentDebt = urlAmount;
+        debtInput.value = urlAmount;
+    } else {
+        currentDebt = 50000;
+        debtInput.value = 50000;
+    }
+    
+    // Parse & validate date (must be a valid date before TODAY)
+    const urlDateStr = urlParams.get('date');
+    let initialDate = new Date('2025-08-22');
+    if (urlDateStr) {
+        const testDate = new Date(urlDateStr);
+        if (!isNaN(testDate.getTime()) && testDate < TODAY) {
+            initialDate = testDate;
+        }
+    }
+    issueDateInput.value = initialDate.toISOString().split('T')[0];
     
     // 2. Set max attribute for date picker (must not select today or future)
     const dayBeforeToday = new Date(TODAY);
     dayBeforeToday.setDate(TODAY.getDate() - 1);
     issueDateInput.max = dayBeforeToday.toISOString().split('T')[0];
     
-    // 3. Initialize calculations
+    // 3. Update preset buttons active state based on loaded amount
+    presetButtons.forEach(btn => {
+        if (parseFloat(btn.dataset.value) === currentDebt) {
+            btn.classList.add('active');
+        } else {
+            btn.classList.remove('active');
+        }
+    });
+    
+    // 4. Set initial URL query parameters so they are clean and synchronized
+    syncParamsToUrl();
+    
+    // 5. Initialize calculations
     calculateAndUpdate();
     
-    // 4. Attach event listeners
+    // 6. Attach event listeners
     debtInput.addEventListener('input', handleDebtChange);
     issueDateInput.addEventListener('change', handleDateChange);
     
@@ -150,8 +182,18 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 /* ==========================================================================
-   Event Handlers
+   URL State Sync & Event Handlers
    ========================================================================== */
+/**
+ * Synchronizes the current debt and issue date state to the browser's URL search parameters
+ */
+function syncParamsToUrl() {
+    const url = new URL(window.location.href);
+    url.searchParams.set('amount', currentDebt);
+    url.searchParams.set('date', issueDateInput.value);
+    window.history.replaceState({}, '', url.toString());
+}
+
 function handleDebtChange(e) {
     let val = parseFloat(e.target.value);
     
@@ -172,6 +214,7 @@ function handleDebtChange(e) {
     });
     
     calculateAndUpdate();
+    syncParamsToUrl();
 }
 
 async function handleDateChange(e) {
@@ -181,10 +224,10 @@ async function handleDateChange(e) {
         // Fallback to 9 months ago if invalid or future
         const fallback = new Date('2025-08-22');
         issueDateInput.value = fallback.toISOString().split('T')[0];
-        return;
     }
     
     await calculateAndUpdate();
+    syncParamsToUrl();
 }
 
 function handlePresetClick(e) {
@@ -196,6 +239,7 @@ function handlePresetClick(e) {
     e.target.classList.add('active');
     
     calculateAndUpdate();
+    syncParamsToUrl();
 }
 
 /* ==========================================================================
