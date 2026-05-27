@@ -1018,7 +1018,7 @@ function kebabToCamel(str) {
  * and recalculates alternative costs in real-time.
  */
 function switchLanguage(lang) {
-    if (lang !== 'uk' && lang !== 'en' && lang !== 'es') return;
+    if (lang !== 'uk' && lang !== 'en' && lang !== 'es' && lang !== 'it') return;
     currentLang = lang;
     
     // Update active class on switcher buttons
